@@ -19,7 +19,7 @@ protected:
     Poller();
 
 protected:
-    typedef std::map<int, IOEvent*> IOEventMap;
+    typedef std::map<int, IOEvent*> IOEventMap; //IO事件映射map
     IOEventMap mEventMap;
 
 };

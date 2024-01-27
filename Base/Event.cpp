@@ -18,7 +18,7 @@ TriggerEvent* TriggerEvent::createNew() {
 }
 
 void TriggerEvent::handleEvent() {
-	if (mTriggerCallback) { mTriggerCallback(mArg, mFd); }
+	if (mTriggerCallback) { mTriggerCallback(mArg, mFd); }	//如果回调函数非空，调用回调函数
 	if (mSendCallback) { mSendCallback(mArg, mFd, mMess);  }
 }
 

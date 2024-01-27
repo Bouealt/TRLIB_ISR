@@ -5,10 +5,10 @@
 #include"ISRServer.h"
 #include"../Base/ThreadPool.h"
 
-InetAddress aliyunAddr("192.168.110.1", 4001, "Aliyun");//阿里云服务器地址
-InetAddress serverAddr("192.168.110.1", 4444, "Server");
+InetAddress aliyunAddr("192.168.235.1", 4001, "Aliyun");//阿里云服务器地址
+InetAddress serverAddr("192.168.0.100", 4444, "Server");
 
-InetAddress mAddr("192.168.110.128", 8555, "myaddr");//本地端口与地址
+InetAddress mAddr("192.168.235.128", 8555, "myaddr");//本地端口与地址
 
 int main() {
 	EventScheduler* scheduler = EventScheduler::createNew(EventScheduler::POLLER_EPOLL);//调度器

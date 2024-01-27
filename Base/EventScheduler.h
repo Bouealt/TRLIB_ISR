@@ -17,7 +17,7 @@ public:
 		POLLER_EPOLL
 	};
 
-	static EventScheduler* createNew(PollerType type);
+	static EventScheduler* createNew(PollerType type);	//静态工厂模式
 
 	EventScheduler(PollerType type);
 	~EventScheduler();
