@@ -7,15 +7,15 @@
 #include <fcntl.h>
 
 int sockets::createTcpSock() {
-	int sockfd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);
+	int sockfd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);	//ipv4, tcp
 	return sockfd;
 }
 
 bool sockets::bind(int sockfd, std::string ip, uint16_t port) {
 	struct sockaddr_in addr = { 0 };
 	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = inet_addr(ip.c_str());
-	addr.sin_port = htons(port);
+	addr.sin_addr.s_addr = inet_addr(ip.c_str());	//inet_addr将点分十进制的ip地址转换为网络字节序的32位二进制数
+	addr.sin_port = htons(port);	//htons将主机字节序转换为网络字节序
 	if (::bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
 		return false;
 	}
@@ -23,18 +23,18 @@ bool sockets::bind(int sockfd, std::string ip, uint16_t port) {
 }
 
 bool sockets::listen(int sockfd, int backlog) {
-	if (::listen(sockfd, backlog) < 0) {
+	if (::listen(sockfd, backlog) < 0) {	//::作用域解析，这里是全局作用域
 		LOGE("listen error");
 		return false;
 	}
 	return true;
 }
 
-int sockets::accept(int sockfd) {
-	struct sockaddr_in addr = { 0 };
+int sockets::accept(int sockfd) {	//接受新请求
+	struct sockaddr_in addr = { 0 };	//用于存储新信息
 	socklen_t addrlen = sizeof(struct sockaddr_in);
 
-	int connfd = ::accept(sockfd, (struct sockaddr*)&addr, &addrlen);
+	int connfd = ::accept(sockfd, (struct sockaddr*)&addr, &addrlen);	//返回值是新连接的文件描述符
 	setNonBlockAndCloseOnExec(connfd);
 	ignoreSigPipeOnSocket(connfd);
 	return connfd;
@@ -44,18 +44,18 @@ int sockets::accept(int sockfd) {
 void sockets::setNonBlockAndCloseOnExec(int sockfd)
 {
 	// non-block
-	int flags = ::fcntl(sockfd, F_GETFL, 0);
-	flags |= O_NONBLOCK;
-	int ret = ::fcntl(sockfd, F_SETFL, flags);
+	int flags = ::fcntl(sockfd, F_GETFL, 0);	//获取状态标志
+	flags |= O_NONBLOCK;	//将非阻塞添加到标志位中
+	int ret = ::fcntl(sockfd, F_SETFL, flags);	//设置状态标志
 
 	// close-on-exec
 	flags = ::fcntl(sockfd, F_GETFD, 0);//fork子进程时，限制子进程对于设置了close-on-exec文件的权限
-	flags |= FD_CLOEXEC;
+	flags |= FD_CLOEXEC;	//在执行exec系列函数时，关闭文件描述符
 	ret = ::fcntl(sockfd, F_SETFD, flags);
 }
 
 void sockets::ignoreSigPipeOnSocket(int socketfd)
-{
+{	//当试图写入一个已经关闭的socket时，会产生SIGPIPE信号，这个信号的默认处理是终止进程，这里忽略SIGPIPE信号
 	int option = 1;
 	setsockopt(socketfd, SOL_SOCKET, MSG_NOSIGNAL, &option, sizeof(option));
 }

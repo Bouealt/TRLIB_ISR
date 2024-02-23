@@ -9,7 +9,7 @@ public:
 	SelectPoller();
 	~SelectPoller();
 
-	static SelectPoller* createNew();
+	static SelectPoller* createNew();	//静态工厂模式
 
 	bool addIOEvent(IOEvent* event);
 	bool updateIOEvent(IOEvent* event);
@@ -17,11 +17,11 @@ public:
 	void handleEvent();
 
 private:
-	fd_set mReadSet;
-	fd_set mWriteSet;
-	fd_set mExceptionSet;
-	int mMaxNumSockets;
-	std::vector<IOEvent*> mIOEvents;
+	fd_set mReadSet;	//读集合
+	fd_set mWriteSet;	//写集合
+	fd_set mExceptionSet;	//异常集合
+	int mMaxNumSockets;	//Socket的最大数量
+	std::vector<IOEvent*> mIOEvents;	//IO事件数组
 };
 
 

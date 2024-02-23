@@ -20,7 +20,7 @@ protected:
 
 protected:
     typedef std::map<int, IOEvent*> IOEventMap; //IO事件映射map
-    IOEventMap mEventMap;
+    IOEventMap mEventMap;   //IO事件map
 
 };
 

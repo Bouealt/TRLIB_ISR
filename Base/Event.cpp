@@ -50,7 +50,7 @@ bool TimerEvent::handleEvent() {
 	if (mIsStop) {
 		return mIsStop;
 	}
-	if (mTimeoutCallback) { mTimeoutCallback(mArg, mFd); }
+	if (mTimeoutCallback) { mTimeoutCallback(mArg, mFd); }	//如果回调函数非空，调用回调函数
 	return mIsStop;
 }
 
@@ -100,10 +100,12 @@ IOEvent* IOEvent::createNew(int fd, void* arg) {
 void IOEvent::handleEvent() {
 	if (mReadCallback && (mEvent & EVENT_READ))
 	{
+		//读事件
 		mReadCallback(mArg, mFd);
 	}
 	if (mWriteCallback && (mEvent & EVENT_WRITE))
 	{
+		//写事件
 		mWriteCallback(mArg, mFd);
 	}
 }

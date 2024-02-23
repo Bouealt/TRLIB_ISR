@@ -7,13 +7,15 @@
 #include "Poller.h"
 #include "Log.h"
 
+//static声明，作用域限制在该文件内，其他文件无法访问
+//设置定时器
 static bool timerFdSetTime(int fd, Timer::TimeStamp when, Timer::TimeInterval period) {
-	struct itimerspec newVal;
-	newVal.it_value.tv_sec = when / 1000;
-	newVal.it_value.tv_nsec = when % 1000 * 1000000;
-	newVal.it_interval.tv_sec = period / 1000;
-	newVal.it_interval.tv_nsec = period % 1000 * 1000000;
-	int oldVal = timerfd_settime(fd, TFD_TIMER_ABSTIME, &newVal, NULL);
+	struct itimerspec newVal;	//itimerspec结构体，表示间隔时间或绝对时间
+	newVal.it_value.tv_sec = when / 1000;	//将时间戳转换为秒
+	newVal.it_value.tv_nsec = when % 1000 * 1000000;	//将时间戳转换为纳秒
+	newVal.it_interval.tv_sec = period / 1000;	//将时间间隔转换为秒
+	newVal.it_interval.tv_nsec = period % 1000 * 1000000;	//将时间间隔转换为纳秒
+	int oldVal = timerfd_settime(fd, TFD_TIMER_ABSTIME, &newVal, NULL);	//设置定时器，以绝对
 	if (oldVal < 0) {
 		return false;
 	}
@@ -48,14 +50,14 @@ Timer::~Timer()
 Timer::TimeStamp Timer::getCurTime()
 {
 	struct timespec now;
-	clock_gettime(CLOCK_MONOTONIC, &now);
-	return (now.tv_sec * 1000 + now.tv_nsec / 1000000);
+	clock_gettime(CLOCK_MONOTONIC, &now);	//获取系统从启动到目前的时间
+	return (now.tv_sec * 1000 + now.tv_nsec / 1000000);	//将秒和纳秒转换为毫秒并返回
 }
 
 Timer::TimeStamp Timer::getCurTimeStamp() {
 	return std::chrono::duration_cast<std::chrono::milliseconds>(
 		std::chrono::system_clock::now().time_since_epoch()).
-		count();
+		count();	//获取系统从1970年1月1日到目前的毫秒数
 }
 
 bool Timer::handleEvent()

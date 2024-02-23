@@ -49,16 +49,16 @@ void EventScheduler::loop() {
 }
 
 bool EventScheduler::addTriggerEvent(TriggerEvent* event) {
-	mTriggerEvents.push_back(event);
+	mTriggerEvents.push_back(event);	//将触发事件添加到mTriggerEvents中
 	return true;
 }
 
-Timer::TimerId EventScheduler::addTimerEventRunEvery(TimerEvent* event, Timer::TimeInterval interval)
+Timer::TimerId EventScheduler::addTimerEventRunEvery(TimerEvent* event, Timer::TimeInterval interval)	//添加定时器事件
 {
 	LOGI("add timerEvent run every time. Interval = %d s", interval / 1000);
 	Timer::TimeStamp timeStamp = Timer::getCurTime();
-	timeStamp += interval;
-	return mTimerManager->addTimer(event, timeStamp, interval);
+	timeStamp += interval;	//时间戳加上时间间隔
+	return mTimerManager->addTimer(event, timeStamp, interval);	//添加定时器事件
 }
 
 void EventScheduler::setTimerInterval(TimerEvent* event, Timer::TimeInterval interval) {

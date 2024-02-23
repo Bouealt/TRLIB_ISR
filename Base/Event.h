@@ -36,18 +36,18 @@ public:
     ~TimerEvent();
 
     void setArg(void* arg) { mArg = arg; }
-    void setTimeoutCallback(EventCallback cb) { mTimeoutCallback = cb; }
+    void setTimeoutCallback(EventCallback cb) { mTimeoutCallback = cb; }    //设置超时回调函数
     bool handleEvent();
     void stop();
     void start();
     bool isStop();
-    void addExeTimes();
-    void setTimerId(uint32_t timerId);
+    void addExeTimes(); //执行次数加1
+    void setTimerId(uint32_t timerId);  //设置定时器id
     uint32_t getTimerId();
 
 private:
     int mFd;    //定时器事件的fd
-    void* mArg; //回调函数参数，void*类型，可以指向任意类型
+    void* mArg; //函数参数，void*类型，可以指向任意类型
     EventCallback mTimeoutCallback; //超时回调函数
     bool mIsStop;   //定时器停止标志
     int mExeTimes;  //执行次数
@@ -59,10 +59,10 @@ class IOEvent {
 public:
     enum IOEventType
     {
-        EVENT_NONE = 0,
-        EVENT_READ = 1,
-        EVENT_WRITE = 2,
-        EVENT_ERROR = 4,
+        EVENT_NONE = 0,     //0000
+        EVENT_READ = 1,     //0001
+        EVENT_WRITE = 2,    //0010
+        EVENT_ERROR = 4,    //0100
     };
 
     static IOEvent* createNew(int fd, void* arg);
@@ -71,7 +71,7 @@ public:
     ~IOEvent();
 
     int getFd() const { return mFd; }
-    int getEvent() const { return mEvent; }
+    int getEvent() const { re turn mEvent; }
     void setEvent(int event) { mEvent = event; }
     void setArg(void* arg) { mArg = arg; }
 
@@ -79,27 +79,27 @@ public:
     void setWriteCallback(EventCallback cb) { mWriteCallback = cb; };
     void setErrorCallback(EventCallback cb) { mErrorCallback = cb; };
 
-    void enableReadHandling() { mEvent |= EVENT_READ; }
+    void enableReadHandling() { mEvent |= EVENT_READ; } //按位或
     void enableWriteHandling() { mEvent |= EVENT_WRITE; }
     void enableErrorHandling() { mEvent |= EVENT_ERROR; }
-    void disableReadeHandling() { mEvent &= ~EVENT_READ; }
+    void disableReadeHandling() { mEvent &= ~EVENT_READ; }  //按位与
     void disableWriteHandling() { mEvent &= ~EVENT_WRITE; }
     void disableErrorHandling() { mEvent &= ~EVENT_ERROR; }
 
     bool isNoneHandling() const { return mEvent == EVENT_NONE; }
     bool isReadHandling() const { return (mEvent & EVENT_READ) != 0; }
     bool isWriteHandling() const { return (mEvent & EVENT_WRITE) != 0; }
-    bool isErrorHandling() const { return (mEvent & EVENT_WRITE) != 0; }
+    bool isErrorHandling() const { return (mEvent & EVENT_ERROR) != 0; }    //按位与
 
     void handleEvent();
 
 private:
-    int mFd;
-    void* mArg;
-    int mEvent = EVENT_NONE;
-    EventCallback mReadCallback = NULL;
-    EventCallback mWriteCallback = NULL;
-    EventCallback mErrorCallback = NULL;
+    int mFd;    //IO事件的fd
+    void* mArg; //参数
+    int mEvent = EVENT_NONE;    //事件类型
+    EventCallback mReadCallback = NULL;     //读回调函数
+    EventCallback mWriteCallback = NULL;    //写回调函数
+    EventCallback mErrorCallback = NULL;    //错误回调函数
 };
 
 

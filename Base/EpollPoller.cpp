@@ -2,7 +2,7 @@
 
 EpollPoller::EpollPoller()
 {
-	mFd = epoll_create(100);
+	mFd = epoll_create(100);	//创建epoll，100只是提示
 }
 
 EpollPoller::~EpollPoller() {
@@ -69,18 +69,18 @@ void EpollPoller::handleEvent() {
 	for (int i = 0; i < ret; i++) {
 		int fd = events[i].data.fd;
 		if (events[i].events & EPOLLIN) {	//读
-			rEvent |= IOEvent::EVENT_READ;
+			rEvent |= IOEvent::EVENT_READ;	//按位或
 		}
 		if (events[i].events & EPOLLOUT) {	//写
-			rEvent |= IOEvent::EVENT_WRITE;
+			rEvent |= IOEvent::EVENT_WRITE;	
 		}
 		if (events[i].events & EPOLLERR) {	//错误
 			rEvent |= IOEvent::EVENT_ERROR;
 		}
 
 		if (rEvent != IOEvent::EVENT_NONE) {	//如果有事件发生
-			mEventMap[fd]->setEvent(rEvent);
-			mIOEvents.push_back(mEventMap[fd]);
+			mEventMap[fd]->setEvent(rEvent);	//设置事件
+			mIOEvents.push_back(mEventMap[fd]);	//将事件加入到mIOEvents中
 		}
 	}
 	for (auto& ioEvent : mIOEvents) {

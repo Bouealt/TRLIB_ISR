@@ -10,16 +10,16 @@
 #define RX_SIZE 2000
 
 #endif
-
-namespace sockets {
-	int createTcpSock();
-	bool bind(int sockfd, std::string ip, uint16_t port);
-	bool listen(int sockfd, int backlog);
-	int accept(int sockfd);
-	void setNonBlockAndCloseOnExec(int sockfd);
-	void ignoreSigPipeOnSocket(int sockfd);
-	void setReuseAddr(int sockfd, int on);
-	void close(int sockfd);
-	int write(int sockfd, const void* buf, int size);
+//防止冲突
+namespace sockets {	//命名空间sockets
+	int createTcpSock();	//创建tcp套接字
+	bool bind(int sockfd, std::string ip, uint16_t port);	//绑定
+	bool listen(int sockfd, int backlog);	//监听
+	int accept(int sockfd);	//接受
+	void setNonBlockAndCloseOnExec(int sockfd);	//设置非阻塞和关闭执行
+	void ignoreSigPipeOnSocket(int sockfd);	//忽略SIGPIPE信号
+	void setReuseAddr(int sockfd, int on);	//设置地址重用
+	void close(int sockfd);	//关闭
+	int write(int sockfd, const void* buf, int size);	//写
 	
 }
