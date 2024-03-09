@@ -2,7 +2,7 @@
 #define TRLIB_ISRCONNECTION_H
 #include"TcpConnection.h"
 
-class ISRServer;
+class ISRServer;	//类的前向声明
 
 class ISRConnection : public TcpConnection{
 public:
@@ -20,7 +20,7 @@ private:
 	
 
 private:
-	int mFd;
+	int mFd;	//isr连接的fd
 	ISRServer* mServer = NULL;
 	std::string mPeerIp;
 	bool mRegistFlag = false;

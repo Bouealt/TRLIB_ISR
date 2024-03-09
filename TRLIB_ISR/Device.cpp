@@ -115,9 +115,9 @@ int Device::openLan() {
 }
 
 std::string Device::getNetId() {
-    std::ifstream ifs;
-    std::string netId;
-    ifs.open("/home/root/g2020/program/device_number/de_number.txt", std::ios::in);
+    std::ifstream ifs;  //文件输入流
+    std::string netId;  
+    ifs.open("/home/root/g2020/program/device_number/de_number.txt", std::ios::in); //输入模式，可读不可写
     if (ifs) {
         //文件打开成功
         getline(ifs, netId);

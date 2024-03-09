@@ -8,7 +8,7 @@ static void getPeerIp(int fd, std::string& ip) {
 	struct sockaddr_in addr;
 	socklen_t addrlen = sizeof(struct sockaddr_in);
 	getpeername(fd, (struct sockaddr*)&addr, &addrlen);
-	ip = inet_ntoa(addr.sin_addr);
+	ip = inet_ntoa(addr.sin_addr);	//转换为点分十进制
 }
 
 ISRConnection* ISRConnection::createNew(ISRServer* isrser, int clientFd, std::string name) {

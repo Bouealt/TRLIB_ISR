@@ -42,5 +42,5 @@ void TRServer::disConnect(int fd) {
 	std::cout << mServerMap[fd].getName() << " disconnect" << std::endl;
 	mServerNum--;
 	mDisconnectServerAddrs.push_back(mServerMap[fd]);
-	mServerMap.erase(fd);
+	mServerMap.erase(fd);	//删除已断开连接的服务器
 }

@@ -1,0 +1,3 @@
+F:/ISR相关/ISR/TRLIB_ISR_Windows/cmake-build-debug/CMakeFiles/TRLIB_ISR_Windows.dir
+F:/ISR相关/ISR/TRLIB_ISR_Windows/cmake-build-debug/CMakeFiles/edit_cache.dir
+F:/ISR相关/ISR/TRLIB_ISR_Windows/cmake-build-debug/CMakeFiles/rebuild_cache.dir

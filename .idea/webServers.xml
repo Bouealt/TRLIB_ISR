@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="243e3ce0-173b-4fed-8fa7-3ea77c98ca0d" name="linux">
+        <fileTransfer rootFolder="/home/yang" accessType="SFTP" host="192.168.235.128" port="22" sshConfigId="3fda8deb-f1e4-470a-8967-99198f54cadc" sshConfig="yang@192.168.235.128:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" isUseRsync="true" isUseSudo="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

@@ -25,7 +25,7 @@ int usbctl::openPort(int comport) {
 	switch (comport)
 	{
 	case 0:
-		fd = open("/dev/tong_lora", O_RDWR | O_NOCTTY | O_NDELAY);
+		fd = open("/dev/tong_lora", O_RDWR | O_NOCTTY | O_NDELAY);  // 读写 | 不将此终端作为此进程的控制终端 | 非阻塞
 		if (-1 == fd) {
 			LOGI("Open lora fail");
 			return -1;
@@ -103,15 +103,15 @@ int usbctl::setOpt(int fd, int nSpeed, int nBits, uint8_t nEvent, int nStop) {
     {
     case 'o':
     case 'O': // 奇数
-        newtio.c_cflag |= PARENB;
-        newtio.c_cflag |= PARODD;
-        newtio.c_iflag |= (INPCK | ISTRIP);
+        newtio.c_cflag |= PARENB;   // 启用奇偶校验
+        newtio.c_cflag |= PARODD;   // 奇数校验
+        newtio.c_iflag |= (INPCK | ISTRIP); 
         break;
     case 'e':
     case 'E': // 偶数
         newtio.c_iflag |= (INPCK | ISTRIP);
         newtio.c_cflag |= PARENB;
-        newtio.c_cflag &= ~PARODD;
+        newtio.c_cflag &= ~PARODD;  // 偶数校验
         break;
     case 'n':
     case 'N': // 无奇偶校验位
@@ -125,8 +125,8 @@ int usbctl::setOpt(int fd, int nSpeed, int nBits, uint8_t nEvent, int nStop) {
     switch (nSpeed)
     {
     case 2400:
-        cfsetispeed(&newtio, B2400);
-        cfsetospeed(&newtio, B2400);
+        cfsetispeed(&newtio, B2400);    // 设置输入波特率
+        cfsetospeed(&newtio, B2400);    // 设置输出波特率
         break;
     case 4800:
         cfsetispeed(&newtio, B4800);
@@ -151,12 +151,12 @@ int usbctl::setOpt(int fd, int nSpeed, int nBits, uint8_t nEvent, int nStop) {
     }
     // 设置停止位
     if (nStop == 1)
-        newtio.c_cflag &= ~CSTOPB;
+        newtio.c_cflag &= ~CSTOPB;  // 1位停止位
     else if (nStop == 2)
-        newtio.c_cflag |= CSTOPB;
+        newtio.c_cflag |= CSTOPB;   // 2位停止位
     // 设置等待时间和最小接收字符[该参数可根据需要调整，影响程序的阻塞特性]
-    newtio.c_cc[VTIME] = 0;
-    newtio.c_cc[VMIN] = 0;
+    newtio.c_cc[VTIME] = 0; //VTIME指定读取第一个字符的等待时间，时间的单位为n*0.1s
+    newtio.c_cc[VMIN] = 0;  //VMIN指定所要读取字符的最小数量
     // 处理未接收字符
     tcflush(fd, TCIFLUSH);
     // 激活新配置

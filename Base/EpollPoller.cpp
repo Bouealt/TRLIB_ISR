@@ -18,16 +18,16 @@ bool EpollPoller::addIOEvent(IOEvent* event) {
 }
 
 bool EpollPoller::updateIOEvent(IOEvent* event) {
-	int fd = event->getFd();	//获取fd
+	int fd = event->getFd();	//获取io事件fd
 	if (fd < 0) {	
 		return false;
 	}
 	mEv.data.fd = fd;	//设置epoll_event结构体的fd
-	mEv.events = EPOLLIN;
+	mEv.events = EPOLLIN;	//设置epoll_event结构体的events，文件描述符可读
 	if (mEventMap.find(fd) == mEventMap.end()) {	//如果fd不在mEventMap中
 		mEventMap.insert(std::make_pair(fd, event));
 	}
-	epoll_ctl(mFd, EPOLL_CTL_ADD, fd, &mEv);	//将fd添加到epoll中
+	epoll_ctl(mFd, EPOLL_CTL_ADD, fd, &mEv);	//将fd添加到epoll中，epoll实例，操作码，要操作的文件描述符，指定fd的事件类型
 
 	if (mEventMap.empty()) {
 		mMaxNumSockets = 0;

@@ -45,25 +45,25 @@ public:
 	
 
 private:
-	TRServer* mTRServer;
-	EventScheduler* mScheduler;
-	ThreadPool* mThreadPool;
-	Task* mReConnectTask;
-	Task* mReadOfflineMessTask;
-	std::map<int, ISRConnection*>mConnectMap;
-	std::map<int, ISRConnection*>mServerMap;
-	std::vector<int> mDisConnectList;
-	TriggerEvent* mCloseTriggerEvent;
-	std::mutex mMtx;
-	int send06Flag = 0;
+	TRServer* mTRServer;	//服务器连接
+	EventScheduler* mScheduler;	//事件调度器
+	ThreadPool* mThreadPool;	//线程池
+	Task* mReConnectTask;	//重连任务
+	Task* mReadOfflineMessTask;	//读离线消息任务
+	std::map<int, ISRConnection*>mConnectMap;	//连接的fd和连接的映射
+	std::map<int, ISRConnection*>mServerMap;	//服务器fd和连接的映射
+	std::vector<int> mDisConnectList;	//断开连接的fd列表
+	TriggerEvent* mCloseTriggerEvent;	//关闭连接触发事件
+	std::mutex mMtx;	//互斥锁
+	int send06Flag = 0;	//发送06标志
 
-	int mFd;
-	IOEvent* mAcceptIOEvent;
-	InetAddress mAddr;
-	TimerEvent* mReconnectServerTimerEvent;
-	TimerEvent* mSendOffLineMessTimerEvent;
-	std::string mOffLinePath = "/home/ubuntu/projects/TRLIB_ISR/message.txt";
-	std::queue<std::string> mOffLineMessQue;
+	int mFd;	
+	IOEvent* mAcceptIOEvent;	//接受连接事件
+	InetAddress mAddr;	//服务器地址
+	TimerEvent* mReconnectServerTimerEvent;	//重连服务器定时器
+	TimerEvent* mSendOffLineMessTimerEvent;	//发送离线消息定时器
+	std::string mOffLinePath = "/home/ubuntu/projects/TRLIB_ISR/message.txt";	//离线消息文件路径
+	std::queue<std::string> mOffLineMessQue;	//离线消息队列
 };
 
 #endif // !TRLIB_NETSERVER_H

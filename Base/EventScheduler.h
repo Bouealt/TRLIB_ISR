@@ -23,7 +23,7 @@ public:
 	EventScheduler(PollerType type);
 	~EventScheduler();
 
-	bool addIOEvent(IOEvent* event);
+	bool addIOEvent(IOEvent* event);	//添加IO事件
 	bool updateIOEvent(IOEvent* event);
 	bool removeIOEvent(IOEvent* event);
 	void loop();	//事件循环

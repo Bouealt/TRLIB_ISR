@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="TRLIB_ISR_Windows"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/tmp/tmp.10teJ7lOj6/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="TRLIB_ISR_Windows">
+				<Option output="/tmp/tmp.10teJ7lOj6/cmake-build-debug/TRLIB_ISR_Windows" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/tmp/tmp.10teJ7lOj6/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/tmp/tmp.10teJ7lOj6/Base"/>
+					<Add directory="/tmp/tmp.10teJ7lOj6/Driver"/>
+					<Add directory="/tmp/tmp.10teJ7lOj6/TRLIB_ISR"/>
+					<Add directory="/usr/include/c++/11"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/11"/>
+					<Add directory="/usr/include/c++/11/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/11/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 TRLIB_ISR_Windows"/>
+					<CompileFile command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="TRLIB_ISR_Windows/fast">
+				<Option output="/tmp/tmp.10teJ7lOj6/cmake-build-debug/TRLIB_ISR_Windows" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/tmp/tmp.10teJ7lOj6/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/tmp/tmp.10teJ7lOj6/Base"/>
+					<Add directory="/tmp/tmp.10teJ7lOj6/Driver"/>
+					<Add directory="/tmp/tmp.10teJ7lOj6/TRLIB_ISR"/>
+					<Add directory="/usr/include/c++/11"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/11"/>
+					<Add directory="/usr/include/c++/11/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/11/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 TRLIB_ISR_Windows/fast"/>
+					<CompileFile command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/tmp/tmp.10teJ7lOj6/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/tmp/tmp.10teJ7lOj6/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j16 -f &quot;/tmp/tmp.10teJ7lOj6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Base/EpollPoller.cpp">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Base/EpollPoller.h">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Base/Event.cpp">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Base/Event.h">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Base/EventScheduler.cpp">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Base/EventScheduler.h">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Base/Log.h">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Base/Poller.cpp">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Base/Poller.h">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Base/SelectPoller.cpp">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Base/SelectPoller.h">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Base/SocketsOps.cpp">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Base/SocketsOps.h">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Base/Thread.cpp">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Base/Thread.h">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Base/ThreadPool.cpp">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Base/ThreadPool.h">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Base/Timer.cpp">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Base/Timer.h">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Driver/deCell4g.cpp">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Driver/deCell4g.h">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Driver/usbctl.cpp">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/Driver/usbctl.h">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/TRLIB_ISR/Buffer.cpp">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/TRLIB_ISR/Buffer.h">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/TRLIB_ISR/Device.cpp">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/TRLIB_ISR/Device.h">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/TRLIB_ISR/ISRConnection.cpp">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/TRLIB_ISR/ISRConnection.h">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/TRLIB_ISR/ISRServer.cpp">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/TRLIB_ISR/ISRServer.h">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/TRLIB_ISR/InetAddress.cpp">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/TRLIB_ISR/InetAddress.h">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/TRLIB_ISR/TRServer.cpp">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/TRLIB_ISR/TRServer.h">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/TRLIB_ISR/TcpConnection.cpp">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/TRLIB_ISR/TcpConnection.h">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/TRLIB_ISR/main.cpp">
+			<Option target="TRLIB_ISR_Windows"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.10teJ7lOj6/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

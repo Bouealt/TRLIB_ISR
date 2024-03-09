@@ -71,7 +71,7 @@ public:
     ~IOEvent();
 
     int getFd() const { return mFd; }
-    int getEvent() const { re turn mEvent; }
+    int getEvent() const { return mEvent; }
     void setEvent(int event) { mEvent = event; }
     void setArg(void* arg) { mArg = arg; }
 

@@ -14,10 +14,10 @@ private:
 	int serversConnect(std::vector<InetAddress> addrs);
 
 public:
-	int mServerNum = 0;
-	std::vector<InetAddress> mServerAddrs;
-	std::vector<InetAddress> mDisconnectServerAddrs;
-	std::map<int, InetAddress> mServerMap;
+	int mServerNum = 0;	//连接的数量
+	std::vector<InetAddress> mServerAddrs;	//所有服务器地址
+	std::vector<InetAddress> mDisconnectServerAddrs;	//已断开连接的服务器地址
+	std::map<int, InetAddress> mServerMap;	//服务器fd和地址的映射
 };
 
 #endif // !TRLIB_TRSERVER_H

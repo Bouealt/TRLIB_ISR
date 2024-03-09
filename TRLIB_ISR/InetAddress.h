@@ -19,10 +19,10 @@ public:
 	std::string getName();
 
 private:
-	std::string mIp;
-	uint16_t mPort;
-	struct sockaddr_in mAddr;
-	std::string mName;
+	std::string mIp;	//ip地址	
+	uint16_t mPort;	//端口号
+	struct sockaddr_in mAddr;	//套接字地址结构体
+	std::string mName;	//服务器名字
 };
 
 
