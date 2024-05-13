@@ -5,14 +5,14 @@ TcpConnection::TcpConnection(EventScheduler* scheduler, int clientFd):
 	mScheduler(scheduler),
 	mFd(clientFd)
 {
-	mIOEvent = IOEvent::createNew(mFd, this);	//创建IO事件
-	mIOEvent->setReadCallback(readCallback);	//设置事件回调函数
+	mIOEvent = IOEvent::createNew(mFd, this);
+	mIOEvent->setReadCallback(readCallback);
 	mIOEvent->setWriteCallback(writeCallback);
 	mIOEvent->setErrorCallback(errorCallback);
 	mIOEvent->enableReadHandling();
 	mIOEvent->enableWriteHandling();
 
-	mScheduler->addIOEvent(mIOEvent);	//添加IO事件
+	mScheduler->addIOEvent(mIOEvent);
 }
 
 TcpConnection::~TcpConnection() {
@@ -27,9 +27,9 @@ void TcpConnection::setDisConnectCallback(DisConnectCallback cb, void* arg) {
 }
 
 void TcpConnection::enableReadHandling() {
-	if (mIOEvent->isReadHandling())return;	//判断是否开启
-	mIOEvent->enableReadHandling();	//设置IO事件的读处理
-	mScheduler->updateIOEvent(mIOEvent);	//更新IO事件
+	if (mIOEvent->isReadHandling())return;
+	mIOEvent->enableReadHandling();
+	mScheduler->updateIOEvent(mIOEvent);
 }
 
 void TcpConnection::enableWriteHandling() {
@@ -62,22 +62,22 @@ void TcpConnection::disableErrorHandling() {
 	mScheduler->updateIOEvent(mIOEvent);
 }
 
-void TcpConnection::handleRead() {	//回调函数实例
-	int ret = mInputBuffer.read(mFd);	//从文件描述符中读取数据到输入缓冲区中
+void TcpConnection::handleRead() {
+	int ret = mInputBuffer.read(mFd);
 	if (ret <= 0) {
-		LOGE("read error, disconnect, fd = %d,ret = %d", mFd, ret);
-		handleDisConnect();	//断开连接
+		std::cout << "read error disconnect, fd = " << mFd <<" ,ret = " << ret << std::endl;
+		handleDisConnect();
 		return;
 	}
 	handleReadBytes();
 }
 
 void TcpConnection::handleWrite() {
-	handleWriteBytes();	//写数据
+	handleWriteBytes();
 }
 
 void TcpConnection::handleError() {
-	LOGE("error fd = %d", mFd);
+	std::cout << "error fd = " << mFd << std::endl;
 }
 
 void TcpConnection::handleReadBytes() {
@@ -85,7 +85,7 @@ void TcpConnection::handleReadBytes() {
 }
 
 void TcpConnection::handleWriteBytes() {
-	LOGE("write fd = %d", mFd);
+	std::cout << "write fd = " << mFd << std::endl;
 }
 
 void TcpConnection::handleDisConnect() {

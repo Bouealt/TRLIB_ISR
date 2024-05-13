@@ -2,7 +2,7 @@
 
 EpollPoller::EpollPoller()
 {
-	mFd = epoll_create(100);	//创建epoll，100只是提示
+	mFd = epoll_create(100);
 }
 
 EpollPoller::~EpollPoller() {
@@ -17,23 +17,24 @@ bool EpollPoller::addIOEvent(IOEvent* event) {
 	return updateIOEvent(event);
 }
 
+//在 Linux 系统中，文件描述符的值通常从 0 开始，最大值通常是打开文件的最大数量减一。
 bool EpollPoller::updateIOEvent(IOEvent* event) {
-	int fd = event->getFd();	//获取io事件fd
-	if (fd < 0) {	
+	int fd = event->getFd();
+	if (fd < 0) {
 		return false;
 	}
-	mEv.data.fd = fd;	//设置epoll_event结构体的fd
-	mEv.events = EPOLLIN;	//设置epoll_event结构体的events，文件描述符可读
-	if (mEventMap.find(fd) == mEventMap.end()) {	//如果fd不在mEventMap中
+	mEv.data.fd = fd;
+	mEv.events = EPOLLIN;
+	if (mEventMap.find(fd) == mEventMap.end()) {
 		mEventMap.insert(std::make_pair(fd, event));
 	}
-	epoll_ctl(mFd, EPOLL_CTL_ADD, fd, &mEv);	//将fd添加到epoll中，epoll实例，操作码，要操作的文件描述符，指定fd的事件类型
+	epoll_ctl(mFd, EPOLL_CTL_ADD, fd, &mEv);
 
 	if (mEventMap.empty()) {
 		mMaxNumSockets = 0;
 	}
 	else {
-		mMaxNumSockets = mEventMap.rbegin()->first + 1;	//获取mEventMap中最大的fd
+		mMaxNumSockets = mEventMap.rbegin()->first + 1;
 	}
 	return true;
 }
@@ -44,43 +45,41 @@ bool EpollPoller::removeIOEvent(IOEvent* event) {
 		return false;
 	}
 	auto it = mEventMap.find(fd);
-	if (it != mEventMap.end()){	//如果fd在mEventMap中
+	if (it != mEventMap.end()){
 		mEventMap.erase(it);
 	}
 	if (mEventMap.empty()){
 		mMaxNumSockets = 0;
 	}
 	else {
-		mMaxNumSockets = mEventMap.rbegin()->first + 1;	//获取mEventMap中最大的fd，rbegin()返回的是反向迭代器
+		mMaxNumSockets = mEventMap.rbegin()->first + 1;
 	}
 	return true;
 }
 
-//处理事件
-void EpollPoller::handleEvent() {	
-	//epoll_event结构体，events包含EPOLLIN、EPOLLOUT、EPOLLPRI、EPOLLERR、EPOLLHUP等和data可以使fd或者ptr
-	epoll_event events[mMaxNumSockets];	//存储epoll_wait返回的事件
-	struct timeval timeout;		//epoll_wait的超时时间
-	int rEvent = IOEvent::EVENT_NONE;	
-	int ret = epoll_wait(mFd, events, mMaxNumSockets, 1000 * 1000);	//阻塞等待
+void EpollPoller::handleEvent() {
+	epoll_event events[mMaxNumSockets];
+	struct timeval timeout;
+	int rEvent = IOEvent::EVENT_NONE;
+	int ret = epoll_wait(mFd, events, mMaxNumSockets, 1000 * 1000);
 	if (ret < 0) {
 		return;
 	}
 	for (int i = 0; i < ret; i++) {
 		int fd = events[i].data.fd;
-		if (events[i].events & EPOLLIN) {	//读
-			rEvent |= IOEvent::EVENT_READ;	//按位或
+		if (events[i].events & EPOLLIN) {	//events表示一组事件
+			rEvent |= IOEvent::EVENT_READ;
 		}
-		if (events[i].events & EPOLLOUT) {	//写
-			rEvent |= IOEvent::EVENT_WRITE;	
+		if (events[i].events & EPOLLOUT) {
+			rEvent |= IOEvent::EVENT_WRITE;
 		}
-		if (events[i].events & EPOLLERR) {	//错误
+		if (events[i].events & EPOLLERR) {
 			rEvent |= IOEvent::EVENT_ERROR;
 		}
 
-		if (rEvent != IOEvent::EVENT_NONE) {	//如果有事件发生
-			mEventMap[fd]->setEvent(rEvent);	//设置事件
-			mIOEvents.push_back(mEventMap[fd]);	//将事件加入到mIOEvents中
+		if (rEvent != IOEvent::EVENT_NONE) {
+			mEventMap[fd]->setEvent(rEvent);
+			mIOEvents.push_back(mEventMap[fd]);
 		}
 	}
 	for (auto& ioEvent : mIOEvents) {

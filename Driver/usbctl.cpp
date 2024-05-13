@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
-#include "../Base/Log.h"
+#include <iostream>
 #include <sys/time.h>
 
 
@@ -25,41 +25,41 @@ int usbctl::openPort(int comport) {
 	switch (comport)
 	{
 	case 0:
-		fd = open("/dev/tong_lora", O_RDWR | O_NOCTTY | O_NDELAY);  // 读写 | 不将此终端作为此进程的控制终端 | 非阻塞
+		fd = open("/dev/tong_lora", O_RDWR | O_NOCTTY | O_NDELAY);
 		if (-1 == fd) {
-			LOGI("Open lora fail");
+            std::cout << "Open lora fail" << std::endl;
 			return -1;
 		}
 		break;
 	case 1:
 		fd = open("/dev/tong_wifi", O_RDWR | O_NOCTTY | O_NDELAY);
 		if (-1 == fd) {
-			LOGI("Open wifi fail");
+            std::cout << "Open wifi fail" << std::endl;
 			return -1;
 		}
 		break;
 	case 2:
 		fd = open("/dev/tong_bt", O_RDWR | O_NOCTTY | O_NDELAY);
 		if (-1 == fd) {
-			LOGI("Open bluetooth fail");
+            std::cout << "Open bluetooth fail" << std::endl;
 			return -1;
 		}
 		break;
 	case 3:
 		fd = open("/dev/tong_4g", O_RDWR | O_NOCTTY | O_NDELAY);
 		if (-1 == fd) {
-			LOGI("Open 4g fail");
+            std::cout << "Open 4g fail" << std::endl;
 			return -1;
 		}
 		break;
 	default:
-		LOGI("Port error");
+        std::cout << "Port error" << std::endl;
 		break;
 	}
 	//设置为非阻塞
 	int fl = fcntl(fd, F_GETFL);
 	if (fcntl(fd, F_SETFL, fl | O_NONBLOCK) < 0) {
-		LOGE("Set nonblock fail");
+        std::cout << "Set nobblock fail" << std::endl;
 	}
 	return fd;
 }
@@ -95,7 +95,7 @@ int usbctl::setOpt(int fd, int nSpeed, int nBits, uint8_t nEvent, int nStop) {
         newtio.c_cflag |= CS8;
         break;
     default:
-        LOGI("nBits error");
+        std::cout << "nBits error" << std::endl;
         break;
     }
     // 设置奇偶校验位
@@ -103,30 +103,30 @@ int usbctl::setOpt(int fd, int nSpeed, int nBits, uint8_t nEvent, int nStop) {
     {
     case 'o':
     case 'O': // 奇数
-        newtio.c_cflag |= PARENB;   // 启用奇偶校验
-        newtio.c_cflag |= PARODD;   // 奇数校验
-        newtio.c_iflag |= (INPCK | ISTRIP); 
+        newtio.c_cflag |= PARENB;
+        newtio.c_cflag |= PARODD;
+        newtio.c_iflag |= (INPCK | ISTRIP);
         break;
     case 'e':
     case 'E': // 偶数
         newtio.c_iflag |= (INPCK | ISTRIP);
         newtio.c_cflag |= PARENB;
-        newtio.c_cflag &= ~PARODD;  // 偶数校验
+        newtio.c_cflag &= ~PARODD;
         break;
     case 'n':
     case 'N': // 无奇偶校验位
         newtio.c_cflag &= ~PARENB;
         break;
     default:
-        LOGI("nEvent error");
+        std::cout << "nEvent error" << std::endl;
         break;
     }
     // 设置波特率
     switch (nSpeed)
     {
     case 2400:
-        cfsetispeed(&newtio, B2400);    // 设置输入波特率
-        cfsetospeed(&newtio, B2400);    // 设置输出波特率
+        cfsetispeed(&newtio, B2400);
+        cfsetospeed(&newtio, B2400);
         break;
     case 4800:
         cfsetispeed(&newtio, B4800);
@@ -151,18 +151,18 @@ int usbctl::setOpt(int fd, int nSpeed, int nBits, uint8_t nEvent, int nStop) {
     }
     // 设置停止位
     if (nStop == 1)
-        newtio.c_cflag &= ~CSTOPB;  // 1位停止位
+        newtio.c_cflag &= ~CSTOPB;
     else if (nStop == 2)
-        newtio.c_cflag |= CSTOPB;   // 2位停止位
+        newtio.c_cflag |= CSTOPB;
     // 设置等待时间和最小接收字符[该参数可根据需要调整，影响程序的阻塞特性]
-    newtio.c_cc[VTIME] = 0; //VTIME指定读取第一个字符的等待时间，时间的单位为n*0.1s
-    newtio.c_cc[VMIN] = 0;  //VMIN指定所要读取字符的最小数量
+    newtio.c_cc[VTIME] = 0;
+    newtio.c_cc[VMIN] = 0;
     // 处理未接收字符
     tcflush(fd, TCIFLUSH);
     // 激活新配置
     if ((tcsetattr(fd, TCSANOW, &newtio)) != 0)
     {
-        LOGE("com set error");
+        std::cout << "com set error" << std::endl;
         return -1;
     }
     return 0;

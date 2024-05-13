@@ -2,7 +2,6 @@
 #define TRLIB_POLLER_H
 #include <map>
 #include "Event.h"
-#include "Log.h"
 
 class Poller
 {
@@ -19,8 +18,8 @@ protected:
     Poller();
 
 protected:
-    typedef std::map<int, IOEvent*> IOEventMap; //IO事件映射map
-    IOEventMap mEventMap;   //IO事件map
+    typedef std::map<int, IOEvent*> IOEventMap;
+    IOEventMap mEventMap;
 
 };
 

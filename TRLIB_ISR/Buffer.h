@@ -5,7 +5,7 @@ class Buffer {
 public:
 	Buffer();
 	~Buffer();
-	//用于网络数据的读取和写入
+
 	int read(int sockfd);
 	int write(int sockfd);
 	void retriveveAll();

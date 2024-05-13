@@ -75,9 +75,6 @@
     <ClInclude Include="..\Base\EventScheduler.h">
       <Filter>Base</Filter>
     </ClInclude>
-    <ClInclude Include="..\Base\Log.h">
-      <Filter>Base</Filter>
-    </ClInclude>
     <ClInclude Include="..\Base\Poller.h">
       <Filter>Base</Filter>
     </ClInclude>

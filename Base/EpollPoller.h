@@ -1,7 +1,6 @@
 #ifndef TRLIB_EPOLLPOLLER_H
 #define TRLIB_EPOLLPOLLER_H
 #include"Poller.h"
-#include"Log.h"
 #include"sys/epoll.h"
 #include<vector>
 
@@ -10,7 +9,7 @@ public:
 	EpollPoller();
 	~EpollPoller();
 
-	static EpollPoller* createNew();	//静态工厂模式
+	static EpollPoller* createNew();
 
 	bool addIOEvent(IOEvent* event);
 	bool updateIOEvent(IOEvent* event);
@@ -18,11 +17,11 @@ public:
 	void handleEvent();
 
 private:
-	int mFd;	//epoll的fd
-	int mMaxNumSockets;	//Socket的最大数量
-	std::vector<IOEvent*> mIOEvents;	//IO事件数组
-	epoll_event mEv;	//epoll_event结构体
-};	
+	int mFd;
+	int mMaxNumSockets;
+	std::vector<IOEvent*> mIOEvents;
+	epoll_event mEv;
+};
 
 
 #endif 

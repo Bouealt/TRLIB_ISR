@@ -24,7 +24,7 @@ bool SelectPoller::addIOEvent(IOEvent* event) {
 bool SelectPoller::updateIOEvent(IOEvent* event) {
     int fd = event->getFd();
     if (fd < 0) {
-        LOGE("fd = %d", fd);
+        std::cout << "fd = " << fd << std::endl;
         return false;
     }
     FD_CLR(fd, &mReadSet);
@@ -56,7 +56,7 @@ bool SelectPoller::removeIOEvent(IOEvent* event)
 {
     int fd = event->getFd();
     if (fd < 0) {
-        LOGE("fd = %d", fd);
+        std::cout << "fd = " << fd << std::endl;
         return false;
     }
     FD_CLR(fd, &mReadSet);

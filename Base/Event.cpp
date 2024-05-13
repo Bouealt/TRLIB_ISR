@@ -1,5 +1,4 @@
 #include"Event.h"
-#include"Log.h"
 
 TriggerEvent::TriggerEvent(void* arg,int fd, std::string mess):mArg(arg),mFd(fd),mMess(mess) {
 	//std::cout << "TriggerEvent start\n" << std::endl;
@@ -18,47 +17,44 @@ TriggerEvent* TriggerEvent::createNew() {
 }
 
 void TriggerEvent::handleEvent() {
-	if (mTriggerCallback) { mTriggerCallback(mArg, mFd); }	//如果回调函数非空，调用回调函数
+	if (mTriggerCallback) { mTriggerCallback(mArg, mFd); }
 	if (mSendCallback) { mSendCallback(mArg, mFd, mMess);  }
 }
 
 
-TimerEvent::TimerEvent(void* arg,int fd):
+TimerEvent::TimerEvent(void* arg, int fd, std::string name):
 	mArg(arg),
 	mFd(fd),
 	mTimeoutCallback(NULL),
 	mIsStop(true),
-	mExeTimes(0)
+	mName(name)
 {
-	std::cout << "TimerEvent start" << std::endl;
+	std::cout << mName << " TimerEvent create" << std::endl;
 }
 
 TimerEvent::~TimerEvent() {
 	//std::cout << "TimerEvent end" << std::endl;
 }
 
-TimerEvent* TimerEvent::createNew(void* arg, int fd) {
-	LOGI("TimerEvent create");
-	return new TimerEvent(arg, fd);
-}
-
-TimerEvent* TimerEvent::createNew() {
-	return new TimerEvent(NULL, -1);
+TimerEvent* TimerEvent::createNew(void* arg, int fd, std::string name) {
+	return new TimerEvent(arg, fd, name);
 }
 
 bool TimerEvent::handleEvent() {
 	if (mIsStop) {
 		return mIsStop;
 	}
-	if (mTimeoutCallback) { mTimeoutCallback(mArg, mFd); }	//如果回调函数非空，调用回调函数
+	if (mTimeoutCallback) { mTimeoutCallback(mArg, mFd); }
 	return mIsStop;
 }
 
 void TimerEvent::stop() {
+	std::cout << mName << " stop" << std::endl;
 	mIsStop = true;
 }
 
 void TimerEvent::start() {
+	std::cout << mName << " start" << std::endl;
 	mIsStop = false;
 }
 
@@ -66,19 +62,8 @@ bool TimerEvent::isStop() {
 	return mIsStop;
 }
 
-void TimerEvent::addExeTimes()
-{
-	mExeTimes+=1;
-}
-
-void TimerEvent::setTimerId(uint32_t timerId)
-{
-	mTimerId = timerId;
-}
-
-uint32_t TimerEvent::getTimerId()
-{
-	return mTimerId;
+std::string TimerEvent::getName() {
+	return mName;
 }
 
 IOEvent::IOEvent(int fd, void* arg):mFd(fd),mArg(arg) {
@@ -98,14 +83,12 @@ IOEvent* IOEvent::createNew(int fd, void* arg) {
 //}
 
 void IOEvent::handleEvent() {
-	if (mReadCallback && (mEvent & EVENT_READ))
+	if (mReadCallback && (mEvent & EVENT_READ))	//检查是否有读事件
 	{
-		//读事件
 		mReadCallback(mArg, mFd);
 	}
 	if (mWriteCallback && (mEvent & EVENT_WRITE))
 	{
-		//写事件
 		mWriteCallback(mArg, mFd);
 	}
 }

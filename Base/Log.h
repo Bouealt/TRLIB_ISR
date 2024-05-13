@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-static std::string getTime() {  //获取当前时间
+static std::string getTime() {
     const char* time_fmt = "%Y-%m-%d %H:%M:%S";
     time_t t = time(nullptr);
     char time_str[64];

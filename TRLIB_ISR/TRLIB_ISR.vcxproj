@@ -99,7 +99,6 @@
     <ClInclude Include="..\Base\EpollPoller.h" />
     <ClInclude Include="..\Base\Event.h" />
     <ClInclude Include="..\Base\EventScheduler.h" />
-    <ClInclude Include="..\Base\Log.h" />
     <ClInclude Include="..\Base\Poller.h" />
     <ClInclude Include="..\Base\SelectPoller.h" />
     <ClInclude Include="..\Base\SocketsOps.h" />
@@ -121,12 +120,7 @@
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <LibraryDependencies>pthread;%(LibraryDependencies)</LibraryDependencies>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Link>
-      <LibraryDependencies>pthread;%(LibraryDependencies)</LibraryDependencies>
+      <LibraryDependencies>pthread</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

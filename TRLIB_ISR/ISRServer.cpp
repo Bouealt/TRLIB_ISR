@@ -2,104 +2,91 @@
 #include<iostream>
 #include<unistd.h>
 #include<string>
-#include<string.h>
-#include"../Base/Log.h"
 #include"../Base/SocketsOps.h"
 #include"../Driver/usbctl.h"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include<fstream>
-#include<queue>
+#include<fcntl.h>
+#include<string.h>
 
 
 
-ISRServer* ISRServer::createNew(EventScheduler* scheduler, ThreadPool* threadPool, std::vector<InetAddress> serverAddrs, InetAddress mAddr) {
-	return new ISRServer(scheduler, threadPool, serverAddrs, mAddr);
+ISRServer* ISRServer::createNew(EventScheduler* scheduler, ThreadPool* threadPool, InetAddress& wifiAddr, InetAddress& lanAddr, std::vector<InetAddress> serverAddrs) {
+	return new ISRServer(scheduler, threadPool, wifiAddr, lanAddr, serverAddrs);
 }
 
-ISRServer::ISRServer(EventScheduler* scheduler, ThreadPool* threadPool, std::vector<InetAddress> serverAddrs, InetAddress mAddr) :
+ISRServer::ISRServer(EventScheduler* scheduler, ThreadPool* threadPool, InetAddress& wifiAddr, InetAddress& lanAddr, std::vector<InetAddress> serverAddrs) :
+	mDevice(Device::createNew(wifiAddr,lanAddr)),
 	mTRServer(TRServer::createNew(serverAddrs)),
 	mScheduler(scheduler),
-	mThreadPool(threadPool),
-	mAddr(mAddr)
+	mThreadPool(threadPool)
 {
-	std::cout << mAddr.getIp() <<" "<<mAddr.getPort()<< std::endl;
-	mFd = sockets::createTcpSock();//非阻塞的描述符
-	sockets::setReuseAddr(mFd, 1);//设置套接字选项（重用端口）（重启时可能端口并未释放，加上后可以及时重用端口）
-	if (!sockets::bind(mFd, mAddr.getIp(), mAddr.getPort())) {
-		std::cout << "bind error" << std::endl; 
-		//_exit(1);
-	}
-	mAcceptIOEvent = IOEvent::createNew(mFd, this);
-	mAcceptIOEvent->setReadCallback(readCallback);//设置回调的socket可读 函数指针
-	mAcceptIOEvent->enableReadHandling();//激活回调函数（只关心可读时间）
-
 	mCloseTriggerEvent = TriggerEvent::createNew(this, -1);//套接字设置为-1表示回调函数不需要该套接字
-	mCloseTriggerEvent->setTriggerCallback(closeConnectCallback);	//设置断开回调
+	mCloseTriggerEvent->setTriggerCallback(closeConnectCallback);	//处理断开连接的地址
 
 	mReConnectTask = Task::createNew();
-	mReConnectTask->setTaskCallback(reConnectTaskCallback, this);	//设置重连回调
+	mReConnectTask->setTaskCallback(reConnectTaskCallback, this);	//重新连接
 
 	serverConnectInit(mTRServer);
-	remove(mOffLinePath.c_str());
+	deviceConnectInit(mDevice);
+	remove(mOffLinePath.c_str());	//清除离线数据文件
+	std::cout << "init success" << std::endl;
+	regist();
 }
-
+   
 ISRServer::~ISRServer() {
-	delete mAcceptIOEvent;
-	delete mCloseTriggerEvent;
+	if (mWifiAcceptIOEvent) {
+		mScheduler->removeIOEvent(mWifiAcceptIOEvent);
+		delete mWifiAcceptIOEvent;
+	}
+	if (mLanAcceptIOEvent) {
+		mScheduler->removeIOEvent(mLanAcceptIOEvent);
+		delete mLanAcceptIOEvent;
+	}
 	if (mReconnectServerTimerEvent) {
 		delete mReconnectServerTimerEvent;
 	}
+
 	if (mSendOffLineMessTimerEvent) {
 		delete mSendOffLineMessTimerEvent;
-	}
+	} 
 	if (mReConnectTask) {
 		delete mReConnectTask;
 	}
 	if (mReadOfflineMessTask) {
 		delete mReadOfflineMessTask;
 	}
+	delete mCloseTriggerEvent;
+	delete mDevice;
 }
 
 void ISRServer::start() {
-	sockets::listen(mFd, 60);
-	std::cout << "start" << std::endl;
-	mScheduler->addIOEvent(mAcceptIOEvent);
+	if (-1 != mDevice->mWifiFd)
+	{
+		sockets::listen(mDevice->mWifiFd,20);
+		mScheduler->addIOEvent(mWifiAcceptIOEvent);
+	}
+	if (-1 != mDevice->mLanFd)
+	{
+		sockets::listen(mDevice->mLanFd, 20);
+		mScheduler->addIOEvent(mLanAcceptIOEvent);
+	}
 }
 
 void ISRServer::readCallback(void* arg, int fd) {
-	std::cout << "readCallback" << std::endl;
 	ISRServer* ser = (ISRServer*)arg;
 	ser->handleRead(fd);
 }
 
 void ISRServer::handleRead(int fd) {
-	int clientFd = sockets::accept(mFd);
+	int clientFd = sockets::accept(fd);
 	if (clientFd < 0) {
-		LOGE("accept error");
+		std::cout << "accept error" << std::endl;
 		return;
 	}
-	LOGI("%d", clientFd);
-	ISRConnection* conn = ISRConnection::createNew(this, clientFd);//有点不安全，创建客户端连接时，一定不要传名字
-	conn->setDisConnectCallback(ISRServer::disConnectCallback, this);	//设置断开连接回调函数
+	std::cout << "new client, fd = " << clientFd << std::endl;
+	ISRConnection* conn = ISRConnection::createNew(this, clientFd);
+	conn->setDisConnectCallback(ISRServer::disConnectCallback, this);
 	mConnectMap.insert(std::make_pair(clientFd, conn));
-}
-
-void ISRServer::serverConnectInit(TRServer* server) {
-	if (0 != server->mDisconnectServerAddrs.size()) {	//有断开的连接
-		for (auto it : server->mDisconnectServerAddrs) {
-			std::cout << it.getName() << " disconnect" << std::endl;
-		}
-		reConnect();
-	}
-	for (auto it : server->mServerMap) {	//查找TRserver中的服务器连接是否存在
-		if (mServerMap.find(it.first) != mServerMap.end())continue;	//已经连接的服务器，跳过，it.first是fd
-		ISRConnection* conn = ISRConnection::createNew(this, it.first, mTRServer->mServerMap[it.first].getName());//传服务器名才会认为创建服务器连接
-		conn->setDisConnectCallback(ISRServer::disConnectCallback, this);	//设置断开连接回调函数
-		mConnectMap.insert(std::make_pair(it.first, conn));
-		mServerMap.insert(std::make_pair(it.first, conn));
-	}
 }
 
 void ISRServer::disConnectCallback(void* arg, int fd) {
@@ -108,30 +95,32 @@ void ISRServer::disConnectCallback(void* arg, int fd) {
 }
 
 void ISRServer::handleDisConnect(int fd) {
-	std::lock_guard <std::mutex> lck(mMtx);	//加锁，防止多线程操作公共资源
-	mDisConnectList.push_back(fd);	//将断开的fd加入到list中
-	mScheduler->addTriggerEvent(mCloseTriggerEvent);	//添加触发事件，将执行closeConnectCallback
+	std::lock_guard <std::mutex> lck(mMtx);
+	mDisConnectList.push_back(fd);
+	mScheduler->addTriggerEvent(mCloseTriggerEvent);
 }
 
 void ISRServer::closeConnectCallback(void* arg, int fd) {
 	ISRServer* isrser = (ISRServer*)arg;
-	isrser->handleCloseConnect();	//处理断开连接
+	isrser->handleCloseConnect();
 }
 
 void ISRServer::handleCloseConnect() {
 	std::lock_guard<std::mutex> lck(mMtx);
 	for (auto it : mDisConnectList) {
 		int fd = it;
-		if (mConnectMap.find(fd) != mConnectMap.end()) {	//存在
+		if (mConnectMap.find(fd) != mConnectMap.end()) {
 			ISRConnection* conn = mConnectMap[fd];
-			if (conn->mName == "") {
-				//断开连接的是客户端
-				std::cout << "client " << " disconnect" << std::endl;
+			if (conn->mSAPMac != "") {
+				//断开连接的是sap
+				std::cout << conn->mSAPMac << " disconnect" << std::endl;
+				mSAPMacMap.erase(conn->mSAPMac);
 			}
 			else {
 				//断开的是服务器
 				mTRServer->disConnect(fd);
 				mServerMap.erase(fd);
+				
 			}
 			delete conn;
 			mConnectMap.erase(fd);
@@ -140,35 +129,184 @@ void ISRServer::handleCloseConnect() {
 	mDisConnectList.clear();
 }
 
-void ISRServer::handleMess(void* arg, std::string mess) {
-	std::cout << "handleMess" << std::endl;
-	TriggerEvent* handleMessTriggerEvent = TriggerEvent::createNew(this, -1, mess);
-	handleMessTriggerEvent->setSendCallback(sendCallback);	//设置发送回调
-	mScheduler->addTriggerEvent(handleMessTriggerEvent);	//添加触发事件
+void ISRServer::·deviceConnectInit(Device* device) {
+	if (0 == device->deviceNum) {
+		std::cout << "The number of available devices : 0" << std::endl;
+		//exit(-1);
+	}
+	if (-1 != device->mWifiFd)
+	{
+		mWifiAcceptIOEvent = IOEvent::createNew(device->mWifiFd, this);
+		mWifiAcceptIOEvent->setReadCallback(readCallback);
+		mWifiAcceptIOEvent->enableReadHandling();
+	}
+	if (-1 != device->mLanFd)
+	{
+		mLanAcceptIOEvent = IOEvent::createNew(device->mLanFd, this);
+		mLanAcceptIOEvent->setReadCallback(readCallback);  
+		mLanAcceptIOEvent->enableReadHandling();
+	}
+	if (-1 != device->mLoraFd) {
+		std::cout << "lora" << std::endl;//还没测试过能不能用
+		ISRConnection* conn = ISRConnection::createNew(this, device->mLoraFd);
+		conn->setDisConnectCallback(ISRServer::disConnectCallback, this);
+		mConnectMap.insert(std::make_pair(device->mLoraFd, conn));
+	}
+	if (-1 != device->mBlueToothFd) {
+		std::cout << "bluetooth" << std::endl;
+		//先不写
+	}
+}
+
+void ISRServer::serverConnectInit(TRServer* server) {
+	if (0 == server->mServerNum) {
+		std::cout << "The number of available servers : 0" << std::endl;
+		for (auto it : server->mDisconnectServerAddrs) {
+			std::cout << it.getName() << " disconnect" << std::endl;
+		}
+		reConnect();
+	}
+
+	for (auto it : server->mServerMap) {	//服务器连接map同步
+		if (mServerMap.find(it.first) != mServerMap.end())continue;
+		ISRConnection* conn = ISRConnection::createNew(this, it.first, mTRServer->mServerMap[it.first].getName());
+		conn->setDisConnectCallback(ISRServer::disConnectCallback, this);
+		mConnectMap.insert(std::make_pair(it.first, conn));
+		mServerMap.insert(std::make_pair(it.first, conn));
+	}
+}
+
+void ISRServer::regist() {
+	std::string ISRRegisterMess = "$04500" + mDevice->mNetId + "00001F" + mDevice->mMacId + mDevice->mGps + mDevice->memR + mDevice->cpuR + mDevice->mIp + "@";
+	TriggerEvent* registTriggerEvent = TriggerEvent::createNew(this, -1, ISRRegisterMess);
+	registTriggerEvent->setSendCallback(sendCallback);
+	mScheduler->addTriggerEvent(registTriggerEvent);
+	
+	TimerEvent* TimerEvent22 = TimerEvent::createNew(this, -1, "send 22 mess");
+	TimerEvent22->setTimeoutCallback(timeOutCallback22);
+	TimerEvent22->start();
+	mScheduler->addTimerEventRunEvery(TimerEvent22, 3 * 60 * 1000);//发送22包的定时间隔为3分钟
+
+	TimerEvent* TimerEventppp = TimerEvent::createNew(this, -1, "restart ppp");
+	TimerEventppp->setTimeoutCallback(timeOutCallbackppp);
+	TimerEventppp->start();
+	mScheduler->addTimerEventRunEvery(TimerEventppp, 15 * 60 * 1000);//重新ppp的定时间隔为15分钟
+
+	//注册之后，添加一个定时事件，时间到，判断mDevice中mUpdateTimeFlag是否为1，不为1则提示使用的本地时间。
+}
+
+void ISRServer::handle01Mess(void* arg, std::string sapMac) {
+	if (mSAPMacMap.find(sapMac) != mSAPMacMap.end()) {
+		std::cout << sapMac << " registered, send 20 mess" << std::endl;
+		handle20Mess(arg, sapMac);
+	}
+	else {
+		mSAPMacMap.insert(std::make_pair(sapMac, (ISRConnection*)arg));
+		std::cout << sapMac << " register, send 17 mess" << std::endl;
+		handle17Mess(arg, sapMac);
+	}
+}
+
+void ISRServer::handle02Mess(void* arg, std::string sapMac) {
+	std::cout << "SAP register confirm" << std::endl;
+	handle05Mess(arg, sapMac);
+	handle20Mess(arg, sapMac);
+
+	ISRConnection* conn = (ISRConnection*)arg;
+	TimerEvent* TimerEvent03 = TimerEvent::createNew(this, conn->getFd(), "send 03 mess");
+	TimerEvent03->setTimeoutCallback(timeOutCallback03);
+	TimerEvent03->start();
+	mScheduler->addTimerEventRunEvery(TimerEvent03, 8 * 1000);//发送03包的定时间隔为8秒
+}
+
+void ISRServer::handle03Mess(int fd) {
+	ISRConnection* conn = mConnectMap[fd];
+	std::string mess03 = "$03100" + mDevice->mNetId + "00001A" + "01" + mDevice->mNetId + conn->mSAPMac + conn->mConnectWay + "@";
+	TriggerEvent* handle03TriggerEvent = TriggerEvent::createNew(this, fd, mess03);//fd不为-1则表示发送给指定套接字，为-1表示发送给所有服务器
+	handle03TriggerEvent->setSendCallback(sendCallback);
+	mScheduler->addTriggerEvent(handle03TriggerEvent);
+}
+
+void ISRServer::handle05Mess(void* arg, std::string sapMac) {
+	ISRConnection* conn = (ISRConnection*)arg;
+	std::string mess05 = "$05100" + mDevice->mNetId + "00" + "0036" + mDevice->mMacId + sapMac + conn->mSAPGps + conn->mSAPCpu + conn->mSAPMem + conn->mConnectWay + conn->mSAPPort + "@";
+	TriggerEvent* handle05TriggerEvent = TriggerEvent::createNew(this, -1, mess05);
+	handle05TriggerEvent->setSendCallback(sendCallback);
+	mScheduler->addTriggerEvent(handle05TriggerEvent);
+}
+
+void ISRServer::handle06Mess(void* arg, std::string mess) {
+	if (send06Flag > 4) {
+		//每收到4次06包给服务器发送一次
+		TriggerEvent* handle06TriggerEvent = TriggerEvent::createNew(this, -1, mess);
+		handle06TriggerEvent->setSendCallback(sendCallback);
+		mScheduler->addTriggerEvent(handle06TriggerEvent);
+		send06Flag = 0;
+	}
+	send06Flag++;
+}
+
+void ISRServer::handle10Mess(void* arg, std::string mess) {
+	if (isSetTime)return;
+	std::cout << "update local time" << std::endl;
+	std::string serverDate = mess.substr(13, 19);
+	std::string setDate = "date -s \"" + serverDate + "\"";
+	system(setDate.c_str());
+	isSetTime = true;
+}
+
+void ISRServer::handle17Mess(void* arg, std::string sapMac) {
+	ISRConnection* conn = (ISRConnection*)arg;
+	std::string mess17 = "$11700" + mDevice->mNetId + "000026" + sapMac + mDevice->mMacId + "01" + mDevice->mNetId + "@";
+	TriggerEvent* handle17TriggerEvent = TriggerEvent::createNew(this, conn->getFd(), mess17);
+	handle17TriggerEvent->setSendCallback(sendCallback);
+	mScheduler->addTriggerEvent(handle17TriggerEvent);
+}
+
+void ISRServer::handle20Mess(void* arg, std::string sapMac) {
+	ISRConnection* conn = (ISRConnection*)arg;
+	std::string time = usbctl::getTime();
+	std::string mess20 = "$20100" + mDevice->mNetId + "00" + "0021" + sapMac + time + "227@";
+	TriggerEvent* handle20TriggerEvent = TriggerEvent::createNew(this, conn->getFd(), mess20);
+	handle20TriggerEvent->setSendCallback(sendCallback);
+	mScheduler->addTriggerEvent(handle20TriggerEvent);
+}
+
+void ISRServer::handle21Mess(void* arg, std::string mess) {
+	mess.replace(1, 2, "06");
+	std::cout << "21 -> 06 :" << mess << std::endl;
+	handle06Mess(arg, mess);
+}
+
+void ISRServer::handle22Mess() {
+	std::string mess22 = "$22" + mDevice->mMacId + "@";
+	TriggerEvent* handle22TriggerEvent = TriggerEvent::createNew(this, -1, mess22);
+	handle22TriggerEvent->setSendCallback(sendCallback);
+	mScheduler->addTriggerEvent(handle22TriggerEvent);
 }
 
 void ISRServer::sendCallback(void* arg, int fd, std::string mess) {
 	std::cout <<"will send mess : "<<  mess << std::endl;
 	ISRServer* isrSer = (ISRServer*)arg;
-	if (fd == -1) {
-		//发送给所有连接的服务器
-		isrSer->sendtoAllServer(mess);
-	}
-	else {
+	if (fd != -1) {
 		//给指定套接字发送消息
 		isrSer->sendMess(fd, mess);
+	}
+	else {
+		//发送给所有连接的服务器
+		isrSer->sendtoAllServer(mess);
 	}
 }
 
 void ISRServer::reConnect() {
-	if (!mReconnectServerTimerEvent) {	//服务器重连定时器为空
-		mReconnectServerTimerEvent = TimerEvent::createNew(this, -1);
-		mReconnectServerTimerEvent->setTimeoutCallback(reConnectTimeoutCallback);	//设置超时回调
+	if (!mReconnectServerTimerEvent) {
+		mReconnectServerTimerEvent = TimerEvent::createNew(this, -1, "reconnect server");
+		mReconnectServerTimerEvent->setTimeoutCallback(reConnectTimeoutCallback);
 	}
-	if (mReconnectServerTimerEvent->isStop()) {	//定时器停止，重启
+	if (mReconnectServerTimerEvent->isStop()) {
 		std::cout << "start reconnect server" << std::endl;
 		mReconnectServerTimerEvent->start();
-		mScheduler->addTimerEventRunEvery(mReconnectServerTimerEvent, 1 * 10 * 1000);
+		mScheduler->addTimerEventRunEvery(mReconnectServerTimerEvent, 60 * 1000);
 	}
 }
 
@@ -184,7 +322,7 @@ void ISRServer::sendtoAllServer(std::string mess) {
 		std::cout << "save offline mess, mess = " << mess << std::endl;
 		int fd = open(mOffLinePath.c_str(), O_WRONLY | O_CREAT | O_APPEND, 0777);
 		mess += "\r\n";
-		int ret = write(fd, mess.c_str(), strlen(mess.c_str()));	//写入文件
+		int ret = write(fd, mess.c_str(), strlen(mess.c_str()));
 		if (ret > 0) {
 			std::cout << "save offline success" << std::endl;
 		}
@@ -193,7 +331,7 @@ void ISRServer::sendtoAllServer(std::string mess) {
 		}
 		close(fd);
 	}
-	if(!mTRServer->mDisconnectServerAddrs.empty()){
+	if (!mTRServer->mDisconnectServerAddrs.empty()) {
 		//重连服务器
 		reConnect();
 	}
@@ -201,7 +339,7 @@ void ISRServer::sendtoAllServer(std::string mess) {
 
 void ISRServer::sendMess(int fd, std::string mess) {
 	int ret = mConnectMap[fd]->sendMessage(mess);
-	std::string messType = mess.substr(1, 2);	//获取消息类型
+	std::string messType = mess.substr(1, 2);
 	if (ret <= 0) {
 		std::cout << "send " << messType << " mess to " << mConnectMap[fd]->mName << " error" << std::endl;
 	}
@@ -210,51 +348,70 @@ void ISRServer::sendMess(int fd, std::string mess) {
 	}
 }
 
-void ISRServer::reConnectTimeoutCallback(void* arg, int fd) {	//重连超时回调
+void ISRServer::timeOutCallback03(void* arg, int fd) {
 	ISRServer* isrser = (ISRServer*)arg;
-	isrser->mThreadPool->addTask(isrser->mReConnectTask, "reconnectTask");	//将重连任务添加到线程池中，mReConnectTask为Task对象
+	isrser->handle03Mess(fd);
 }
 
-void ISRServer::reConnectTaskCallback(void* arg) {	//重连任务回调
+void ISRServer::timeOutCallback22(void* arg, int fd) {
+	ISRServer* isrser = (ISRServer*)arg;
+	isrser->handle22Mess();
+}
+
+void ISRServer::timeOutCallbackppp(void* arg, int fd) {
+	ISRServer* isrser = (ISRServer*)arg;
+	isrser->mTRServer->pppInit();
+}
+
+
+void ISRServer::reConnectTimeoutCallback(void* arg, int fd) {
+	ISRServer* isrser = (ISRServer*)arg;
+	isrser->mThreadPool->addTask(isrser->mReConnectTask, "reconnectTask");
+}
+
+
+void ISRServer::reConnectTaskCallback(void* arg) {//进来了就会触发发送离线数据，得改
 	ISRServer* isrser = (ISRServer*)arg;
 	if (isrser->mTRServer->reConnect()) {
 		std::cout << "connect all server success" << std::endl;
-		isrser->mReconnectServerTimerEvent->stop();	//停止重连定时器
+		isrser->mReconnectServerTimerEvent->stop();
 	}
 	else {
 		std::cout << "connect all server faild" << std::endl;
 	}
-	isrser->serverConnectInit(isrser->mTRServer);	//初始化服务器连接
-	isrser->handleOffLineMess();	//处理离线消息
+	
+	isrser->serverConectInit(isrser->mTRServer);
+	if (isrser->mServierMap.size() != 0) {
+		isrser->handleOffLineMess();
+	}
 }
 
 void ISRServer::handleOffLineMess() {
-	if (!mSendOffLineMessTimerEvent) {	//发送离线消息定时器为空
-		mSendOffLineMessTimerEvent = TimerEvent::createNew(this, -1);
-		mSendOffLineMessTimerEvent->setTimeoutCallback(sendOffLineMessCallback);	//设置超时回调
+	if (!mSendOffLineMessTimerEvent) {
+		mSendOffLineMessTimerEvent = TimerEvent::createNew(this, -1, "send offline mess");
+		mSendOffLineMessTimerEvent->setTimeoutCallback(sendOffLineMessCallback);
 	}
-	if (access(mOffLinePath.c_str(), F_OK) && mSendOffLineMessTimerEvent->isStop()) {	//离线文件不存在且定时器停止
+	if (access(mOffLinePath.c_str(), F_OK) && mSendOffLineMessTimerEvent->isStop()) {//有离线文件且发送离线文件的定时事件未开启
 		return;
 	}
-	if (!mReadOfflineMessTask) {	//读离线消息任务为空
+	if (!mReadOfflineMessTask) {
 		mReadOfflineMessTask = Task::createNew();
-		mReadOfflineMessTask->setTaskCallback(readOfflineMessTaskCallback, this);	//设置读离线消息回调
+		mReadOfflineMessTask->setTaskCallback(readOfflineMessTaskCallback, this);
 	}
 	mThreadPool->addTask(mReadOfflineMessTask, "ReadOfflineTask");
 
-	mSendOffLineMessTimerEvent->start();	//启动发送离线消息定时器
+	mSendOffLineMessTimerEvent->start();
 	mScheduler->addTimerEventRunEvery(mSendOffLineMessTimerEvent, 4 * 1000);
 }
 
 void ISRServer::sendOffLineMessCallback(void* arg, int fd) {
 	ISRServer* isrser = (ISRServer*)arg;
 	if (!isrser->mOffLineMessQue.empty()) {
-		isrser->sendtoAllServer(isrser->mOffLineMessQue.front());	
+		isrser->sendtoAllServer(isrser->mOffLineMessQue.front());
 		isrser->mOffLineMessQue.pop();
 	}
 	else {
-		std::cout << "stop" << std::endl;
-		isrser->mSendOffLineMessTimerEvent->stop();	
+		isrser->mSendOffLineMessTimerEvent->stop();
 	}
 }
 
@@ -263,11 +420,18 @@ void ISRServer::readOfflineMessTaskCallback(void* arg) {
 	std::cout << "Read OffLine Mess" << std::endl;
 	std::ifstream in;
 	in.open(isrser->mOffLinePath);
-	char mess[200];
-	while (in.getline(mess, 200)) {
-		isrser->mOffLineMessQue.push(mess);
+	if (in.is_open()) {
+		char mess[2000];
+		while (in.getline(mess, 2000)) {
+			isrser->mOffLineMessQue.push(mess);
+		}
+		std::cout << "offline mess size:" << isrser->mOffLineMessQue.size() << std::endl;
+		in.close();
 	}
-	std::cout << "size:" << isrser->mOffLineMessQue.size() << std::endl;
+	else {
+		std::cout << "in open fail" << std::endl;
+	}
+	
 	remove(isrser->mOffLinePath.c_str());
 	//isrser->mSendOffLineMessTimerEvent->stop();
 }

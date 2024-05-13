@@ -12,16 +12,16 @@ public:
 
 protected:
 	Thread();
-	virtual void run(void* arg) = 0;	//纯虚函数，在子类中重写
+	virtual void run(void* arg) = 0;
 
 private:
 	static void* threadRun(void*);
 
 private:
-	void* mArg;	//线程参数
-	bool mIsStart;	//线程是否启动
-	bool mIsDetach;	//线程是否分离
-	std::thread mThread;	//线程对象
+	void* mArg;
+	bool mIsStart;
+	bool mIsDetach;
+	std::thread mThread;
 };
 
 

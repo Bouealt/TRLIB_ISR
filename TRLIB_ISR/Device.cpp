@@ -1,5 +1,4 @@
 #include"Device.h"
-#include"../Base/Log.h"
 #include"../Driver/usbctl.h"
 #include"../Base/SocketsOps.h"
 #include"../Driver/deCell4g.h"
@@ -47,13 +46,13 @@ Device::~Device() {
 int Device::openLora() {
 	int loraFd = usbctl::openPort(0);
 	if (-1 == loraFd) {
-		LOGE("lora open fail");
+        std::cout << "lora open error" << std::endl;
 		return -1;
 	}
     usbctl::setOpt(loraFd, 115200, 8, 'n', 1);
     deviceNum += 1;
 	mDeviceFd[loraFd] = "loraFd";
-	LOGI("Init success: lora. Device descriptor = %d", loraFd);
+    std::cout << "Init success: lan, Device dscriptor = " << loraFd << std::endl;
 	return loraFd;
 }
 
@@ -76,18 +75,18 @@ int Device::openWifi() {
     //sleep(2);
     int wifiFd = sockets::createTcpSock();
     if (wifiFd < 0) {
-        LOGE("wifiFd create error");
+        std::cout << "wifiFd create error" << std::endl;
         return -1;
     }
     sockets::setReuseAddr(mWifiFd, 1);
     int ret = bind(wifiFd, mWifiAddress.getAddr(), sizeof(struct sockaddr));
     if (ret < 0) {
-        LOGE("Wifi bind error");
+        std::cout << "wifi bind error" << std::endl;
         return -1;
     }
     deviceNum += 1;
     mDeviceFd[wifiFd] = "wifiFd";
-    LOGI("Init success: wifi. Device descriptor = %d", wifiFd);
+    std::cout << "Init success: wifi, device descriptor = " << wifiFd << std::endl;
     return wifiFd;
 }
 
@@ -99,31 +98,31 @@ int Device::openLan() {
     system("ifconfig eth0 192.168.2.1 netmask 255.255.255.0");
     int lanFd = sockets::createTcpSock();
     if (lanFd < 0) {
-        LOGE("lanFd create error");
+        std::cout << "lanFd create error" << std::endl;
         return -1;
     }
     sockets::setReuseAddr(lanFd, 1);
     int ret = bind(lanFd, mLanAddress.getAddr(), sizeof(struct sockaddr));
     if (ret < 0) {
-        LOGE("Lan bind error");
+        std::cout << "Lan bind error" << std::endl;
         return -1;
     }
     deviceNum += 1;
     mDeviceFd[lanFd] = "lanFd";
-    LOGI("Init success: lan. Device descriptor = %d", lanFd);
+    std::cout << "Init success: lan, device descriptor = " << lanFd << std::endl;
     return lanFd;
 }
 
 std::string Device::getNetId() {
-    std::ifstream ifs;  //文件输入流
-    std::string netId;  
-    ifs.open("/home/root/g2020/program/device_number/de_number.txt", std::ios::in); //输入模式，可读不可写
+    std::ifstream ifs;
+    std::string netId;
+    ifs.open("/home/root/g2020/program/device_number/de_number.txt", std::ios::in);
     if (ifs) {
         //文件打开成功
         getline(ifs, netId);
         return netId;
     }
-    LOGE("mNetId get error");
+    std::cout << "mNetId get error" << std::endl;
 }
 
 std::string Device::getMacId() {
@@ -135,5 +134,5 @@ std::string Device::getMacId() {
         getline(ifs, macId);
         return macId;
     }
-    LOGE("mMacId get error");
+    std::cout << "mMacId get error" << std::endl;
 }

@@ -1,0 +1,19 @@
+﻿  正在验证源
+  正在将源远程复制到“192.168.110.129”
+  正在验证体系结构
+  正在验证体系结构
+  正在启动远程生成
+  正在编译源:
+  ISRServer.cpp
+E:\project\Linux\TRLIB_ISR - 2\TRLIB_ISR\ISRServer.h(64,18): warning : ‘ISRServer::mScheduler’ will be initialized after [-Wreorder]
+E:\project\Linux\TRLIB_ISR - 2\TRLIB_ISR\ISRServer.h(64,18): warning :   EventScheduler* mScheduler;
+E:\project\Linux\TRLIB_ISR - 2\TRLIB_ISR\ISRServer.h(64,18): warning :                   ^~~~~~~~~~
+E:\project\Linux\TRLIB_ISR - 2\TRLIB_ISR\ISRServer.h(63,14): warning : ‘ThreadPool* ISRServer::mThreadPool’ [-Wreorder]
+E:\project\Linux\TRLIB_ISR - 2\TRLIB_ISR\ISRServer.h(63,14): warning :   ThreadPool* mThreadPool;
+E:\project\Linux\TRLIB_ISR - 2\TRLIB_ISR\ISRServer.h(63,14): warning :               ^~~~~~~~~~~
+E:\project\Linux\TRLIB_ISR - 2\TRLIB_ISR\ISRServer.cpp(17,1): warning : when initialized here [-Wreorder]
+E:\project\Linux\TRLIB_ISR - 2\TRLIB_ISR\ISRServer.cpp(325,18): warning : conversion to ‘int’ from ‘ssize_t {aka long int}’ may alter its value [-Wconversion]
+E:\project\Linux\TRLIB_ISR - 2\TRLIB_ISR\ISRServer.cpp(325,18): warning :    int ret = write(fd, mess.c_str(), strlen(mess.c_str()));
+E:\project\Linux\TRLIB_ISR - 2\TRLIB_ISR\ISRServer.cpp(325,18): warning :              ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  正在链接对象
+  TRLIB_ISR.vcxproj -> E:\project\Linux\TRLIB_ISR - 2\TRLIB_ISR\bin\x64\Debug\TRLIB_ISR.out

@@ -1,5 +1,4 @@
 #include"EventScheduler.h"
-#include"Log.h"
 
 EventScheduler* EventScheduler::createNew(PollerType type) {
 	return new EventScheduler(type);
@@ -11,10 +10,10 @@ EventScheduler::EventScheduler(PollerType type) {
 			mPoller = SelectPoller::createNew();
 			break;
 		case POLLER_EPOLL:
-			mPoller = EpollPoller::createNew();
+			mPoller = EpollPoller::createNew();		//mPoller = EpollPoller::createNew();
 			break;
 		default:
-			LOGE("PollerType error");
+			std::cout << "PollerType error" << std::endl;
 			_Exit(-1);
 			break;
 	}
@@ -49,28 +48,17 @@ void EventScheduler::loop() {
 }
 
 bool EventScheduler::addTriggerEvent(TriggerEvent* event) {
-	mTriggerEvents.push_back(event);	//将触发事件添加到mTriggerEvents中
+	mTriggerEvents.push_back(event);
 	return true;
 }
 
-Timer::TimerId EventScheduler::addTimerEventRunEvery(TimerEvent* event, Timer::TimeInterval interval)	//添加定时器事件
+Timer::TimerId EventScheduler::addTimerEventRunEvery(TimerEvent* event, Timer::TimeInterval interval)
 {
-	LOGI("add timerEvent run every time. Interval = %d s", interval / 1000);
+	std::cout << "add timerEvent " << event->getName() << " run every time, Interval = " << interval/1000 << "s" << std::endl;
 	Timer::TimeStamp timeStamp = Timer::getCurTime();
-	timeStamp += interval;	//时间戳加上时间间隔
-	return mTimerManager->addTimer(event, timeStamp, interval);	//添加定时器事件
-}
-
-void EventScheduler::setTimerInterval(TimerEvent* event, Timer::TimeInterval interval) {
-	LOGI("set timerEvent interval = %d s", interval / 1000);
-	mTimerManager->setTimerInterval(event, interval);
-}
-
-bool EventScheduler::removeTimerEvent(Timer::TimerId timerId)
-{
-	return mTimerManager->removeTimer(timerId);
-}
-
+	timeStamp += interval;
+	return mTimerManager->addTimer(event, timeStamp, interval);
+}  
 void EventScheduler::handleTriggerEvent() {
 	if (mTriggerEvents.empty())return;
 	for (auto it : mTriggerEvents) {

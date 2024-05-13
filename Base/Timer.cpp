@@ -5,17 +5,14 @@
 #include "Event.h"
 #include "EventScheduler.h"
 #include "Poller.h"
-#include "Log.h"
 
-//static声明，作用域限制在该文件内，其他文件无法访问
-//设置定时器
 static bool timerFdSetTime(int fd, Timer::TimeStamp when, Timer::TimeInterval period) {
-	struct itimerspec newVal;	//itimerspec结构体，表示间隔时间或绝对时间
-	newVal.it_value.tv_sec = when / 1000;	//将时间戳转换为秒
-	newVal.it_value.tv_nsec = when % 1000 * 1000000;	//将时间戳转换为纳秒
-	newVal.it_interval.tv_sec = period / 1000;	//将时间间隔转换为秒
-	newVal.it_interval.tv_nsec = period % 1000 * 1000000;	//将时间间隔转换为纳秒
-	int oldVal = timerfd_settime(fd, TFD_TIMER_ABSTIME, &newVal, NULL);	//设置定时器，以绝对
+	struct itimerspec newVal;
+	newVal.it_value.tv_sec = when / 1000;
+	newVal.it_value.tv_nsec = when % 1000 * 1000000;
+	newVal.it_interval.tv_sec = period / 1000;
+	newVal.it_interval.tv_nsec = period % 1000 * 1000000;
+	int oldVal = timerfd_settime(fd, TFD_TIMER_ABSTIME, &newVal, NULL);
 	if (oldVal < 0) {
 		return false;
 	}
@@ -35,6 +32,7 @@ Timer::Timer(TimerEvent* event, TimeStamp timeStamp, TimeInterval timeInterval,T
 		mRepeat = false;
 	}
 }
+】
 
 Timer::Timer() {
 
@@ -50,14 +48,14 @@ Timer::~Timer()
 Timer::TimeStamp Timer::getCurTime()
 {
 	struct timespec now;
-	clock_gettime(CLOCK_MONOTONIC, &now);	//获取系统从启动到目前的时间
-	return (now.tv_sec * 1000 + now.tv_nsec / 1000000);	//将秒和纳秒转换为毫秒并返回
+	clock_gettime(CLOCK_MONOTONIC, &now);
+	return (now.tv_sec * 1000 + now.tv_nsec / 1000000);
 }
 
 Timer::TimeStamp Timer::getCurTimeStamp() {
 	return std::chrono::duration_cast<std::chrono::milliseconds>(
 		std::chrono::system_clock::now().time_since_epoch()).
-		count();	//获取系统从1970年1月1日到目前的毫秒数
+		count();
 }
 
 bool Timer::handleEvent()
@@ -79,10 +77,9 @@ TimerManager::TimerManager(EventScheduler* scheduler) :
 {
 	mTimerFd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);
 	if (mTimerFd < 0) {
-		LOGE("Create TimerFd error");
+		std::cout << "Create TimerFd error" << std::endl;
 		return;
 	}
-	LOGI("TimerFd = %d", mTimerFd);
 	mTimerIOEvent = IOEvent::createNew(mTimerFd, this);
 	mTimerIOEvent->setReadCallback(readCallback);
 	mTimerIOEvent->enableReadHandling();
@@ -99,11 +96,9 @@ TimerManager::~TimerManager()
 Timer::TimerId TimerManager::addTimer(TimerEvent* event, Timer::TimeStamp timeStamp, Timer::TimeInterval timeInterval)
 {
 	++mLastTimerId;
-	LOGI("LastTimerId = %d", mLastTimerId);
 	Timer timer(event, timeStamp, timeInterval, mLastTimerId);
 	mTimers.insert(std::make_pair(mLastTimerId, timer));
 	mEvents.insert(std::make_pair(timeStamp, timer));
-	event->setTimerId(mLastTimerId);
 	modifyTimeout();
 	return mLastTimerId;
 }
@@ -111,7 +106,7 @@ Timer::TimerId TimerManager::addTimer(TimerEvent* event, Timer::TimeStamp timeSt
 bool TimerManager::removeTimer(Timer::TimerId timeId)
 {
 	if (mTimers.find(timeId) == mTimers.end()) {
-		LOGE("Not find Timer which timeId = %d", timeId);
+		std::cout << "Not find Timer which timerId = "<< timeId << std::endl;
 		return false;
 	}
 	Timer timer = mTimers[timeId];
@@ -119,22 +114,6 @@ bool TimerManager::removeTimer(Timer::TimerId timeId)
 	mTimers.erase(timeId);
 	modifyTimeout();
 	return true;
-}
-
-void TimerManager::setTimerInterval(TimerEvent* event, Timer::TimeInterval interval)
-{
-	auto it = mTimers.find(event->getTimerId());
-	if (it != mTimers.end()) {
-		it->second.mTimeInterval = interval;
-	}
-}
-
-void TimerManager::setTimerIntervalTwice(TimerEvent* event)
-{
-	auto it = mTimers.find(event->getTimerId());
-	if (it != mTimers.end()) {
-		it->second.mTimeInterval *= 2;
-	}
 }
 
 void TimerManager::modifyTimeout()
@@ -165,7 +144,6 @@ void TimerManager::handleRead()
 		if (timeStamp > timer.mTimeStamp || expire == 0) {
 			bool isStop = timer.handleEvent();
 			mEvents.erase(it);
-			it->second.mTimerEvent->addExeTimes();
 			if (timer.mRepeat) {
 				if (isStop) {
 					mTimers.erase(timer.mTimerId);

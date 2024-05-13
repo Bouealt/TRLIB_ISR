@@ -2,7 +2,7 @@
 #define TRLIB_ISRCONNECTION_H
 #include"TcpConnection.h"
 
-class ISRServer;	//类的前向声明
+class ISRServer;
 
 class ISRConnection : public TcpConnection{
 public:
@@ -17,17 +17,29 @@ public:
 private:
 	void handleReadBytes();
 	void handleWriteBytes();
+	int analysis01Mess();
+	int analysis02Mess();
 	
 
 private:
-	int mFd;	//isr连接的fd
+	int mFd;
 	ISRServer* mServer = NULL;
 	std::string mPeerIp;
 	bool mRegistFlag = false;
 
 public:
+	std::string mSAPPort = "";
+	std::string mSAPGps = "";
+	std::string mSAPCpu = "";
+	std::string mSAPMem = "";
 	std::string mMess = "";
+	std::string mSAPMac = "";
+	std::string mConnectWay = "0001";
 	std::string mName = "";
+
+public:
+	
+	
 };
 
 #endif // !TRLIB_ISRCONNECTION_H
