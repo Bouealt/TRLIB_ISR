@@ -34,6 +34,7 @@ Device::Device(InetAddress& wifiAddress, InetAddress& lanAddress):
     if (s != "") {
         mIp = s;
     }
+    system("echo 0 > /sys/class/leds/green/brightness");	//初始化绿灯
 }
 
 Device::~Device() {

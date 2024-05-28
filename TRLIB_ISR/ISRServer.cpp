@@ -253,6 +253,7 @@ void ISRServer::handle10Mess(void* arg, std::string mess) {
 	std::string setDate = "date -s \"" + serverDate + "\"";
 	system(setDate.c_str());
 	isSetTime = true;
+	system("echo 1 > /sys/class/leds/green/brightness");	//继电器开启
 }
 
 void ISRServer::handle17Mess(void* arg, std::string sapMac) {
