@@ -92,8 +92,97 @@ int Device::openWifi() {
 }
 
 int Device::openBlueTooth() {
+    // 未测试------
+    int fd = -1, ret;
+    char *p;
+    char buf[33];
+    struct timeval timeout;
+    fd_set fdset;
+
+    // 遍历com口
+    timeout.tv_sec = 1;
+    timeout.tv_usec = 0;
+    int i = 5;
+    while (i > 0) {
+        fd = usbctl::openPort(2);
+        if (fd == -1) {
+            i--;
+            continue;
+        } else {
+            break;
+        }
+    }
+
+    if (fd != -1) {
+        uint8_t RST[] = "AT+Z=1\r\n";              // 重启
+        uint8_t OPEN_VISUAL[] = "AT+SPP=1\r\n";    // 设置可见
+        uint8_t SET_DNAME[] = "AT+DNAME=g2020\r\n"; // 设置蓝牙名称为 g2020
+        // 配置USB端口
+        ret = usbctl::setOpt(fd, 115200, 8, 'n', 1);
+
+        // 发送重启命令
+        usbctl::writePort(fd, RST, strlen((const char*)RST));
+        sleep(1);
+
+        // 监听事件 1 秒钟 超时跳过
+        FD_ZERO(&fdset);
+        FD_SET(fd, &fdset);
+        timeout.tv_sec = 1;
+        timeout.tv_usec = 0;
+        ret = select(fd + 1, &fdset, NULL, NULL, &timeout);
+        if (ret > 0 && FD_ISSET(fd, &fdset)) {
+            ret = usbctl::readPort(fd, buf, sizeof(buf) - 1);
+            if (ret > 0) {
+                buf[ret] = '\0';  // 确保字符串以 '\0' 结尾
+                p = strstr(buf, "OK");
+                if (p != NULL) {
+                    // 设置蓝牙可见
+                    usbctl::writePort(fd, OPEN_VISUAL, strlen((const char*)OPEN_VISUAL));
+                    sleep(2);
+
+                    // 监听事件 1 秒钟 超时跳过
+                    FD_ZERO(&fdset);
+                    FD_SET(fd, &fdset);
+                    timeout.tv_sec = 1;
+                    timeout.tv_usec = 0;
+                    ret = select(fd + 1, &fdset, NULL, NULL, &timeout);
+                    if (ret > 0 && FD_ISSET(fd, &fdset)) {
+                        ret = usbctl::readPort(fd, buf, sizeof(buf) - 1);
+                        if (ret > 0) {
+                            buf[ret] = '\0';  // 确保字符串以 '\0' 结尾
+                            p = strstr(buf, "OK");
+                            if (p != NULL) {
+                                // 设置蓝牙名称
+                                usbctl::writePort(fd, SET_DNAME, strlen((const char*)SET_DNAME));
+                                sleep(1);
+
+                                // 监听事件 1 秒钟 超时跳过
+                                FD_ZERO(&fdset);
+                                FD_SET(fd, &fdset);
+                                timeout.tv_sec = 1;
+                                timeout.tv_usec = 0;
+                                ret = select(fd + 1, &fdset, NULL, NULL, &timeout);
+                                if (ret > 0 && FD_ISSET(fd, &fdset)) {
+                                    ret = usbctl::readPort(fd, buf, sizeof(buf) - 1);
+                                    if (ret > 0) {
+                                        buf[ret] = '\0';  // 确保字符串以 '\0' 结尾
+                                        p = strstr(buf, "OK");
+                                        if (p != NULL) {
+                                            return fd;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        close(fd);
+    }
     return -1;
 }
+
 
 int Device::openLan() {
     system("ifconfig eth0 192.168.2.1 netmask 255.255.255.0");

@@ -20,8 +20,13 @@ public:
 	}
 
 private:
+	static void bluetoothReadCallback(void* arg, int fd);
+	void handleBluetoothRead(int fd);
+
 	static void readCallback(void* arg, int fd);
 	void handleRead(int fd);
+	void handleBlueToothData(const char* data, int length);
+
 	static void disConnectCallback(void* arg,int clientFd);
 	void handleDisConnect(int clientFd);
 	static void closeConnectCallback(void* arg, int fd);
@@ -66,6 +71,7 @@ private:
 	Task* mReadOfflineMessTask;	//读取离线数据任务
 	IOEvent* mWifiAcceptIOEvent;
 	IOEvent* mLanAcceptIOEvent;
+	IOEvent* mBlueToothAcceptIOEvent;
 	std::map<int, ISRConnection*>mConnectMap;//所有连接
 	std::map<int, ISRConnection*>mServerMap;//服务器连接
 	std::map<std::string, ISRConnection*>mSAPMacMap;//sap连接

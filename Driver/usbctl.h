@@ -7,6 +7,8 @@
 namespace usbctl {
     int openPort(int comport);
     int setOpt(int fd, int nSpeed, int nBits, uint8_t nEvent, int nStop);
+    int writePort(int fd, const void *buf, size_t len);
+    int readPort(int fd, void *buf, size_t len);
     std::string getTime();
 }
 

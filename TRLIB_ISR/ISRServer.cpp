@@ -42,6 +42,12 @@ ISRServer::~ISRServer() {
 		mScheduler->removeIOEvent(mLanAcceptIOEvent);
 		delete mLanAcceptIOEvent;
 	}
+	if(mBlueToothAcceptIOEvent)
+	{
+		mScheduler->removeIOEvent(mBlueToothAcceptIOEvent);
+		delete mBlueToothAcceptIOEvent;
+	
+	}
 	if (mReconnectServerTimerEvent) {
 		delete mReconnectServerTimerEvent;
 	}
@@ -71,6 +77,36 @@ void ISRServer::start() {
 		mScheduler->addIOEvent(mLanAcceptIOEvent);
 	}
 }
+void ISRServer::bluetoothReadCallback(void* arg, int fd) {
+	ISRServer* ser = (ISRServer*)arg;
+	ser->handleBluetoothRead(fd);
+}
+void ISRServer::handleBluetoothRead(int fd) {
+    char buffer[1024];
+    int bytesRead = usbctl::readPort(fd, buffer, sizeof(buffer) - 1);
+    if (bytesRead > 0) {
+        buffer[bytesRead] = '\0';  // 确保字符串以 '\0' 结尾
+        std::cout << "Received data from Bluetooth fd " << fd << ": " << buffer << std::endl;
+
+        // 处理蓝牙数据
+        ISRServer::handleBlueToothData(buffer, bytesRead);
+    } else {
+        if (bytesRead == 0) {
+            std::cout << "Bluetooth connection closed by peer on fd " << fd << std::endl;
+        } else {
+            perror("read");
+        }
+        // 处理连接关闭或错误的情况
+        close(fd);
+    }
+}
+
+void ISRServer::handleBlueToothData(const char* data, int length) {
+    // 处理蓝牙数据
+    std::cout << "Handling Bluetooth data: " << std::string(data, length) << std::endl;
+    // 添加蓝牙数据处理逻辑
+}
+
 
 void ISRServer::readCallback(void* arg, int fd) {
 	ISRServer* ser = (ISRServer*)arg;
@@ -154,7 +190,10 @@ void ISRServer::deviceConnectInit(Device* device) {
 	}
 	if (-1 != device->mBlueToothFd) {
 		std::cout << "bluetooth" << std::endl;
-		//先不写
+		//还没测试过
+		mBlueToothAcceptIOEvent = IOEvent::createNew(device->mBlueToothFd, this);
+        mBlueToothAcceptIOEvent->setReadCallback(bluetoothReadCallback);
+        mBlueToothAcceptIOEvent->enableReadHandling();
 	}
 }
 

@@ -168,6 +168,41 @@ int usbctl::setOpt(int fd, int nSpeed, int nBits, uint8_t nEvent, int nStop) {
     return 0;
 }
 
+// 写串口
+// @param
+// @fd      文件描述符fd
+// @buf     需写入的缓存首地址（需发送的数据/组）
+// @nBits   写入的缓存大小 单位KB字节
+// @return  失败返回< -1 >
+//          成功返回已发送的字节长度
+//
+int usbctl::writePort(int fd, const void *buf, size_t len)
+{
+    int ret;
+    ret = write(fd, buf, len);
+    if (ret < 0)
+        return ret;
+    return ret;
+}
+
+// 写串口
+// @param
+// @fd      文件描述符fd
+// @buf     读取得数据存储的缓存首地址
+// @nBits   读取的数据大小 单位KB字节 必须小于给出的缓存大小
+// @return  失败返回< -1 >
+//          成功返回已读取的字节长度
+//
+int usbctl::readPort(int fd, void *buf, size_t len)
+{
+    int ret;
+    ret = read(fd, buf, len);
+    if (ret < 0)
+        return ret;
+    tcflush(fd, TCIFLUSH);
+    return ret;
+}
+
 
 std::string usbctl::getTime() {
     struct timeval tv;
