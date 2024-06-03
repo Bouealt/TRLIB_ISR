@@ -39,6 +39,7 @@ int deCell::cellWanDetect(char* netName)    //检测指定网口
     if (ioctl(sock_fd, SIOCGIFADDR, &ifr) < 0)//获取接口ip地址
     {
         std::cout << "No such device : " << netName << std::endl;
+        close(sock_fd);     //关闭错误套接字
         return -1;
     }
     memcpy(&my_addr, &ifr.ifr_addr, sizeof(my_addr));
@@ -46,6 +47,7 @@ int deCell::cellWanDetect(char* netName)    //检测指定网口
     printf("Network addresss: %s\r\n", deCell::ipaddr);
     if (strlen(deCell::ipaddr) == 0) {
         std::cout << "Ip is not vaild" << std::endl;
+        close(sock_fd);      //确保关闭文件描述符
         return -1;
     }
     close(sock_fd);
@@ -127,6 +129,7 @@ int deCell::cell4gDetect(char* netName) {   //检测ppp0网口
     if (ioctl(sock_fd, SIOCGIFADDR, &ifr) < 0)
     {
         std::cout << "No such device " << netName << std::endl;
+        close(sock_fd);  //关闭错误的套接字
         return -1;
     }
     memcpy(&my_addr, &ifr.ifr_addr, sizeof(my_addr));
@@ -134,6 +137,7 @@ int deCell::cell4gDetect(char* netName) {   //检测ppp0网口
     std::cout << "Network address: " << ipaddr << std::endl;
     if (strlen(ipaddr) == 0) {
         std::cout << "Ip is not vaild" << std::endl;
+        close(sock_fd);  //关闭错误的套接字
         return -1;
     }
     close(sock_fd);

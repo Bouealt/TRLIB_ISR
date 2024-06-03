@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "f:/ISR相关/ISR/TRLIB_ISR/TRLIB_ISR",
-      "program": "f:/ISR相关/ISR/TRLIB_ISR/TRLIB_ISR/build/Debug/outDebug",
+      "cwd": "g:/share/TRLIB_ISR/Driver",
+      "program": "g:/share/TRLIB_ISR/Driver/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

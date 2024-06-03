@@ -129,7 +129,7 @@ void ISRServer::handleCloseConnect() {
 	mDisConnectList.clear();
 }
 
-void ISRServer::·deviceConnectInit(Device* device) {
+void ISRServer::deviceConnectInit(Device* device) {
 	if (0 == device->deviceNum) {
 		std::cout << "The number of available devices : 0" << std::endl;
 		//exit(-1);
@@ -307,7 +307,7 @@ void ISRServer::reConnect() {
 	if (mReconnectServerTimerEvent->isStop()) {
 		std::cout << "start reconnect server" << std::endl;
 		mReconnectServerTimerEvent->start();
-		mScheduler->addTimerEventRunEvery(mReconnectServerTimerEvent, 60 * 1000);
+		mScheduler->addTimerEventRunEvery(mReconnectServerTimerEvent, 60 * 1000); // 60 * 1000
 	}
 }
 
@@ -381,8 +381,8 @@ void ISRServer::reConnectTaskCallback(void* arg) {//进来了就会触发发送�
 		std::cout << "connect all server faild" << std::endl;
 	}
 	
-	isrser->serverConectInit(isrser->mTRServer);
-	if (isrser->mServierMap.size() != 0) {
+	isrser->serverConnectInit(isrser->mTRServer);
+	if (isrser->mServerMap.size() != 0) {
 		isrser->handleOffLineMess();
 	}
 }

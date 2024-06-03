@@ -18,7 +18,7 @@ TRServer::TRServer(std::vector<InetAddress> serverAddrs) :
 }
 
 void TRServer::wanInit(){
-	system("/home/rot/g2020/mokuai/4g/ppp/ppp/quectel-ppp-kill");
+	system("/home/root/g2020/mokuai/4g/ppp/ppp/quectel-ppp-kill");
 	int wanFlag = deCell::cellWanDetect("eth1");	//检测网络接口并获取其IP地址
 	if (-1 == wanFlag) {
 		std::cout << "WAN error" << std::endl;
@@ -83,8 +83,19 @@ int TRServer::reConnect() {
 }
 
 void TRServer::disConnect(int fd) {
-	std::cout << mServerMap[fd].getName() << " disconnect" << std::endl;
-	mServerNum--;
-	mDisconnectServerAddrs.push_back(mServerMap[fd]);
-	mServerMap.erase(fd);
+	// std::cout << mServerMap[fd].getName() << " disconnect" << std::endl;
+	// mServerNum--;
+	// mDisconnectServerAddrs.push_back(mServerMap[fd]);
+	// mServerMap.erase(fd);
+	try {
+        if (mServerMap.find(fd) == mServerMap.end()) {
+            throw std::runtime_error("fd not found in mServerMap");
+        }
+        std::cout << mServerMap[fd].getName() << " disconnect" << std::endl;
+        mServerNum--;
+        mDisconnectServerAddrs.push_back(mServerMap[fd]);
+        mServerMap.erase(fd);
+    } catch (const std::exception &e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
 }

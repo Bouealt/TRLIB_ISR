@@ -65,7 +65,11 @@ void TcpConnection::disableErrorHandling() {
 void TcpConnection::handleRead() {
 	int ret = mInputBuffer.read(mFd);
 	if (ret <= 0) {
-		std::cout << "read error disconnect, fd = " << mFd <<" ,ret = " << ret << std::endl;
+		if (ret == 0) {
+            std::cout << "Peer closed connection, fd = " << mFd << std::endl;
+        } else {
+            std::cerr << "Read error disconnect, fd = " << mFd << ", ret = " << ret << std::endl;
+        }
 		handleDisConnect();
 		return;
 	}
