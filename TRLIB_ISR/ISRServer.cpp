@@ -121,6 +121,7 @@ void ISRServer::handleRead(int fd) {
 	}
 	std::cout << "new client, fd = " << clientFd << std::endl;
 	ISRConnection* conn = ISRConnection::createNew(this, clientFd);
+	printf(" handle read con");
 	conn->setDisConnectCallback(ISRServer::disConnectCallback, this);
 	mConnectMap.insert(std::make_pair(clientFd, conn));
 }
@@ -185,6 +186,7 @@ void ISRServer::deviceConnectInit(Device* device) {
 	if (-1 != device->mLoraFd) {
 		std::cout << "lora" << std::endl;//还没测试过能不能用
 		ISRConnection* conn = ISRConnection::createNew(this, device->mLoraFd);
+		printf(" lora set connectcall");
 		conn->setDisConnectCallback(ISRServer::disConnectCallback, this);
 		mConnectMap.insert(std::make_pair(device->mLoraFd, conn));
 	}
@@ -208,6 +210,7 @@ void ISRServer::serverConnectInit(TRServer* server) {
 
 	for (auto it : server->mServerMap) {	//服务器连接map同步
 		if (mServerMap.find(it.first) != mServerMap.end())continue;
+		printf(" serverConnectInit");
 		ISRConnection* conn = ISRConnection::createNew(this, it.first, mTRServer->mServerMap[it.first].getName());
 		conn->setDisConnectCallback(ISRServer::disConnectCallback, this);
 		mConnectMap.insert(std::make_pair(it.first, conn));

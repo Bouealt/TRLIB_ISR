@@ -58,7 +58,7 @@ int Device::openLora() {
 }
 
 int Device::openWifi() {
-    /**wifi设备初始化**/
+    /**wifi设备初始化**//*驱动不对或者版本不对*/
     //在执行hostapd和udhcpd之前，应该先将现有的进程杀掉
     system("killall hostapd");
     //sleep(2);
@@ -66,7 +66,7 @@ int Device::openWifi() {
     //sleep(2);
     //首先开启wlan0
     //打开wlan0，并开启AP模式
-    system("hostapd -B /home/root/g2020/program/software/wifi/hostapd.conf &");
+    system("hostapd -B /home/root/g2020/program/software/wifi/hostapd.conf &");//-----------
     //sleep(5);
     //启动udhcpd 进行DHCP自动分配ip
     //首先配置wlan0的ip和netmask，不然会报错

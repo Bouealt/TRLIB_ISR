@@ -8,7 +8,7 @@
 InetAddress isrWifiAddr("192.168.3.1", 1234, "isrWifi");//isr wifi地址
 InetAddress isrLanAddr("192.168.2.1", 2234, "isrLan");//isr lan口地址
 
-InetAddress serverAddr("tstit.x3322.net", 12345, "Server");//实验室本地服务器地址
+InetAddress serverAddr("tstit.x3322.net", 12121, "Server");//实验室本地服务器地址
 InetAddress aliyunAddr("g2020.top", 8888, "Aliyun");//阿里云服务器地址
 
 int main() {
