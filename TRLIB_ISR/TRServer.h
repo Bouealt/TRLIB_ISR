@@ -2,7 +2,6 @@
 #define TRLIB_TRSERVER_H
 #include"InetAddress.h"
 #include"map"
-
 class TRServer {
 public:
 	static TRServer* createNew(std::vector<InetAddress> serverAddrs);

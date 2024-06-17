@@ -38,7 +38,6 @@ bool EpollPoller::updateIOEvent(IOEvent* event) {
 	}
 	return true;
 }
-
 bool EpollPoller::removeIOEvent(IOEvent* event) {
 	int fd = event->getFd();
 	if (fd < 0) {
@@ -58,15 +57,21 @@ bool EpollPoller::removeIOEvent(IOEvent* event) {
 }
 
 void EpollPoller::handleEvent() {
+
+
 	epoll_event events[mMaxNumSockets];
 	struct timeval timeout;
 	int rEvent = IOEvent::EVENT_NONE;
-	int ret = epoll_wait(mFd, events, mMaxNumSockets, 1000 * 1000);
+	// for(auto it = mEventMap.begin(); it != mEventMap.end(); it++) {
+	// 			printf(" wait before it->first = %d\n", it->first);
+	// 		}
+	int ret = epoll_wait(mFd, events, mMaxNumSockets, 1000 * 1000);		//epoll dis
 	if (ret < 0) {
 		return;
 	}
 	for (int i = 0; i < ret; i++) {
 		int fd = events[i].data.fd;
+		// printf( "epoll meventmap fd = %d\n", fd);
 		if (events[i].events & EPOLLIN) {	//events表示一组事件
 			rEvent |= IOEvent::EVENT_READ;
 		}
@@ -78,7 +83,10 @@ void EpollPoller::handleEvent() {
 		}
 
 		if (rEvent != IOEvent::EVENT_NONE) {
-			mEventMap[fd]->setEvent(rEvent);
+			// for(auto it = mEventMap.begin(); it != mEventMap.end(); it++) {
+			// 	printf(" it->first = %d\n", it->first);
+			// }
+			mEventMap[fd]->setEvent(rEvent);		//错误原因
 			mIOEvents.push_back(mEventMap[fd]);
 		}
 	}

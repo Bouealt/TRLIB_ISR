@@ -29,6 +29,7 @@ public:
 	bool addTriggerEvent(TriggerEvent* event);
 	Timer::TimerId addTimerEventRunEvery(TimerEvent* event, Timer::TimeInterval interval);
 	Poller* getPoller();
+	
 
 private:
 	void handleTriggerEvent();

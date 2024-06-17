@@ -39,7 +39,6 @@ bool EventScheduler::removeIOEvent(IOEvent* event) {
 }
 
 void EventScheduler::loop() {
-
 	while (true)
 	{
 		handleTriggerEvent();
