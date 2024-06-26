@@ -32,7 +32,6 @@ Timer::Timer(TimerEvent* event, TimeStamp timeStamp, TimeInterval timeInterval,T
 		mRepeat = false;
 	}
 }
-】
 
 Timer::Timer() {
 

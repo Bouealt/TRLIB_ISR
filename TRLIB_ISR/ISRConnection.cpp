@@ -47,7 +47,7 @@ void ISRConnection::handleReadBytes() {
 	retrieveMess();
 }
 
-void ISRConnection::handleWrinmteBytes() {
+void ISRConnection::handleWriteBytes() {
 
 }
 

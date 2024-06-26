@@ -129,7 +129,7 @@ void ISRServer::handleCloseConnect() {
 	mDisConnectList.clear();
 }
 
-void ISRServer::·deviceConnectInit(Device* device) {
+void ISRServer::deviceConnectInit(Device* device) {
 	if (0 == device->deviceNum) {
 		std::cout << "The number of available devices : 0" << std::endl;
 		//exit(-1);
@@ -258,7 +258,7 @@ void ISRServer::handle10Mess(void* arg, std::string mess) {
 
 void ISRServer::handle17Mess(void* arg, std::string sapMac) {
 	ISRConnection* conn = (ISRConnection*)arg;
-	std::string mess17 = "$11700" + mDevice->mNetId + "000026" + sapMac + mDevice->mMacId + "01" + mDevice->mNetId + "@";
+	std::string mess17 = "$17100" + mDevice->mNetId + "000026" + sapMac + mDevice->mMacId + "01" + mDevice->mNetId + "@";
 	TriggerEvent* handle17TriggerEvent = TriggerEvent::createNew(this, conn->getFd(), mess17);
 	handle17TriggerEvent->setSendCallback(sendCallback);
 	mScheduler->addTriggerEvent(handle17TriggerEvent);
@@ -381,8 +381,8 @@ void ISRServer::reConnectTaskCallback(void* arg) {//进来了就会触发发送�
 		std::cout << "connect all server faild" << std::endl;
 	}
 	
-	isrser->serverConectInit(isrser->mTRServer);
-	if (isrser->mServierMap.size() != 0) {
+	isrser->serverConnectInit(isrser->mTRServer);
+	if (isrser->mServerMap.size() != 0) {
 		isrser->handleOffLineMess();
 	}
 }

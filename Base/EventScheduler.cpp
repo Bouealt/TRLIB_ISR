@@ -10,7 +10,7 @@ EventScheduler::EventScheduler(PollerType type) {
 			mPoller = SelectPoller::createNew();
 			break;
 		case POLLER_EPOLL:
-			mPoller = EpollPoller::createNew();		//mPoller = EpollPoller::createNew();
+			mPoller = EpollPoller::createNew();		
 			break;
 		default:
 			std::cout << "PollerType error" << std::endl;
