@@ -232,7 +232,7 @@ void ISRServer::regist() {
 	TimerEvent* TimerEventppp = TimerEvent::createNew(this, -1, "restart ppp");
 	TimerEventppp->setTimeoutCallback(timeOutCallbackppp);
 	TimerEventppp->start();
-	mScheduler->addTimerEventRunEvery(TimerEventppp, 1 * 60 * 1000);//重新ppp的定时间隔为15分钟
+	mScheduler->addTimerEventRunEvery(TimerEventppp, 15 * 60 * 1000);//重新ppp的定时间隔为15分钟
 
 	//注册之后，添加一个定时事件，时间到，判断mDevice中mUpdateTimeFlag是否为1，不为1则提示使用的本地时间。
 }
@@ -300,7 +300,7 @@ void ISRServer::handle10Mess(void* arg, std::string mess) {
 
 void ISRServer::handle17Mess(void* arg, std::string sapMac) {
 	ISRConnection* conn = (ISRConnection*)arg;
-	std::string mess17 = "$1700" + mDevice->mNetId + "000026" + sapMac + mDevice->mMacId + "01" + mDevice->mNetId + "@";
+	std::string mess17 = "$17100" + mDevice->mNetId + "000026" + sapMac + mDevice->mMacId + "01" + mDevice->mNetId + "@";
 	TriggerEvent* handle17TriggerEvent = TriggerEvent::createNew(this, conn->getFd(), mess17);
 	handle17TriggerEvent->setSendCallback(sendCallback);
 	mScheduler->addTriggerEvent(handle17TriggerEvent);
