@@ -1,10 +1,12 @@
 #ifndef TRLIB_TRSERVER_H
 #define TRLIB_TRSERVER_H
-#include"InetAddress.h"
-#include"map"
-class TRServer {
+#include "InetAddress.h"
+#include "map"
+#include <memory>
+class TRServer
+{
 public:
-	static TRServer* createNew(std::vector<InetAddress> serverAddrs);
+	static std::unique_ptr<TRServer> createNew(std::vector<InetAddress> serverAddrs);
 	TRServer(std::vector<InetAddress> serverAddrs);
 	void pppInit();
 	int reConnect();

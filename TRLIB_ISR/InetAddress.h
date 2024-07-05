@@ -6,6 +6,7 @@
 #include<netinet/in.h>
 #include<arpa/inet.h>
 #include"vector"
+#include<memory>
 
 class InetAddress {
 public:

@@ -6,7 +6,6 @@
 class SelectPoller : public Poller {
 public:
 	SelectPoller();
-	~SelectPoller();
 
 	static SelectPoller* createNew();
 

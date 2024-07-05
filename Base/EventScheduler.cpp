@@ -59,6 +59,7 @@ Timer::TimerId EventScheduler::addTimerEventRunEvery(TimerEvent* event, Timer::T
 	return mTimerManager->addTimer(event, timeStamp, interval);
 }  
 void EventScheduler::handleTriggerEvent() {
+	printf("handleTriggerEvent\n");
 	if (mTriggerEvents.empty())return;
 	for (auto it : mTriggerEvents) {
 		it->handleEvent();

@@ -29,7 +29,6 @@ int Buffer::read(int sockfd) // test
         return -1;
     }
 
-
 	char RX_buf[RX_SIZE];
 	memset(RX_buf, 0, sizeof(RX_buf));
 	int n = ::read(sockfd, RX_buf, sizeof(RX_buf));

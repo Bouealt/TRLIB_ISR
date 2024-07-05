@@ -7,10 +7,6 @@ SelectPoller::SelectPoller()
     FD_ZERO(&mExceptionSet);
 }
 
-SelectPoller::~SelectPoller()
-{
-
-}
 
 SelectPoller* SelectPoller::createNew()
 {

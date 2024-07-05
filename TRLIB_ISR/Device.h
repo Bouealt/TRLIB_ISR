@@ -6,7 +6,7 @@
 
 class Device {
 public:
-	static Device* createNew(InetAddress& wifiAddress, InetAddress& lanAddress);
+	static std::unique_ptr<Device> createNew(InetAddress& wifiAddress, InetAddress& lanAddress);
 	Device(InetAddress& wifiAddress, InetAddress& lanAddress);
 	~Device();
 

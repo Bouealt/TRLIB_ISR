@@ -1,13 +1,14 @@
 #ifndef TRLIB_ISRCONNECTION_H
 #define TRLIB_ISRCONNECTION_H
-#include"TcpConnection.h"
+#include "TcpConnection.h"
 
 class ISRServer;
 
-class ISRConnection : public TcpConnection{
+class ISRConnection : public TcpConnection
+{
 public:
-	static ISRConnection* createNew(ISRServer* isrser, int clientFd, std::string name = "");
-	ISRConnection(ISRServer* isrser, int clientFd, std::string name);
+	static ISRConnection *createNew(ISRServer *isrser, int clientFd, std::string name = "");
+	ISRConnection(ISRServer *isrser, int clientFd, std::string name);
 	int sendMessage(std::string mess);
 	bool isRegist() const;
 	std::string getMess() const;
@@ -19,11 +20,10 @@ private:
 	void handleWriteBytes();
 	int analysis01Mess();
 	int analysis02Mess();
-	
 
 private:
 	int mFd;
-	ISRServer* mServer = NULL;
+	ISRServer *mServer = NULL;
 	std::string mPeerIp;
 	bool mRegistFlag = false;
 
@@ -38,9 +38,6 @@ public:
 	std::string mName = "";
 
 public:
-	
-	
 };
 
 #endif // !TRLIB_ISRCONNECTION_H
-
