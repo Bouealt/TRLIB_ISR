@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "g:/share/TRLIB_ISR/TRLIB_ISR",
-      "program": "g:/share/TRLIB_ISR/TRLIB_ISR/build/Debug/outDebug",
+      "cwd": "g:/share/TRLIB_ISR/Base",
+      "program": "g:/share/TRLIB_ISR/Base/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

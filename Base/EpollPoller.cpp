@@ -17,7 +17,7 @@ bool EpollPoller::addIOEvent(IOEvent* event) {
 	return updateIOEvent(event);
 }
 
-//在 Linux 系统中，文件描述符的值通常从 0 开始，最大值通常是打开文件的最大数量减一。
+//�? Linux 系统中，文件描述符的值通常�? 0 开始，最大值通常是打开文件的最大数量减一�?
 bool EpollPoller::updateIOEvent(IOEvent* event) {
 	int fd = event->getFd();
 	if (fd < 0) {
@@ -39,19 +39,25 @@ bool EpollPoller::updateIOEvent(IOEvent* event) {
 	return true;
 }
 
-bool EpollPoller::removeIOEvent(IOEvent* event) {
+bool EpollPoller::removeIOEvent(IOEvent *event)
+{
 	int fd = event->getFd();
-	if (fd < 0) {
+	if (fd < 0)
+	{
 		return false;
 	}
 	auto it = mEventMap.find(fd);
-	if (it != mEventMap.end()){
+	if (it != mEventMap.end())
+	{
 		mEventMap.erase(it);
+		epoll_ctl(mFd, EPOLL_CTL_DEL, fd, nullptr); // ɾ���ļ�������*******
 	}
-	if (mEventMap.empty()){
+	if (mEventMap.empty())
+	{
 		mMaxNumSockets = 0;
 	}
-	else {
+	else
+	{
 		mMaxNumSockets = mEventMap.rbegin()->first + 1;
 	}
 	return true;
@@ -67,7 +73,7 @@ void EpollPoller::handleEvent() {
 	}
 	for (int i = 0; i < ret; i++) {
 		int fd = events[i].data.fd;
-		if (events[i].events & EPOLLIN) {	//events表示一组事件
+		if (events[i].events & EPOLLIN) {	//events表示一组事�?
 			rEvent |= IOEvent::EVENT_READ;
 		}
 		if (events[i].events & EPOLLOUT) {
