@@ -38,6 +38,10 @@ void ISRConnection::handleReadBytes() {
 		if (!analysis02Mess())return;
 		mServer->handle02Mess(this, mSAPMac);
 	}
+	if (messType == "15"){ // sap控制包
+		mServer->handle15Mess(this, mMess);
+	}
+
 	if (messType == "10") {
 		mServer->handle10Mess(this, mMess);
 	}

@@ -51,6 +51,9 @@ public:
 	void handle05Mess(void* arg, std::string sapMac);//sap向服务器注册
 	void handle06Mess(void* arg, std::string mess);//sap数据
 	void handle10Mess(void* arg, std::string mess);//服务器时间戳
+
+	void handle15Mess(void* arg, std::string mess);//sap重启控制
+
 	void handle17Mess(void* arg, std::string sapMac);//isr信息下发
 	void handle20Mess(void* arg, std::string sapMac);//isr时间戳
 	void handle21Mess(void* arg, std::string mess);//sap缓存数据

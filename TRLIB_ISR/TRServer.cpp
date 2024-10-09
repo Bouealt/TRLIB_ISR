@@ -71,6 +71,11 @@ void TRServer::pppInit() {
 	std::cout << "ppp start" << std::endl;
 	if (-1 == deCell::pppInit("ppp0")) {
 		std::cout << "ppp error" << std::endl;
+		// 等待2分钟后重启设备
+		std::cout << "Will reboot the device in two minutes" << std::endl;
+		sleep(120); // 2分钟
+		std::cout << "Rebooting the system..." << std::endl;
+		system("reboot"); // 执行重启命令
 	}
 	else {
 		std::cout << "ppp success" << std::endl;
