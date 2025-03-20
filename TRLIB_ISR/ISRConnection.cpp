@@ -47,6 +47,10 @@ void ISRConnection::handleReadBytes()
 	{
 		mServer->handle10Mess(this, mMess);
 	}
+	else if (messType == "15")
+	{
+		mServer->handle15Mess(this, mMess);
+	}
 	else if (messType == "06")
 	{
 		mServer->handle06Mess(this, mMess);

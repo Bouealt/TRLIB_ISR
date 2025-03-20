@@ -342,6 +342,17 @@ void ISRServer::handle10Mess(void *arg, std::string mess)
 	system("echo 1 > /sys/class/leds/green/brightness"); // 继电器开启
 }
 
+void ISRServer::handle15Mess(void *arg, std::string mess)
+{
+	// 开关继电器以重启SAP设备
+	system("echo 0 > /sys/class/leds/green/brightness"); // 继电器关闭
+
+	std::this_thread::sleep_for(std::chrono::seconds(1)); // 暂停1秒
+
+	system("echo 1 > /sys/class/leds/green/brightness"); // 继电器开启
+}
+
+
 void ISRServer::handle17Mess(void *arg, std::string sapMac)
 {
 	ISRConnection *conn = (ISRConnection *)arg;
