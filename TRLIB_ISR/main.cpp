@@ -14,7 +14,8 @@ InetAddress aliyunAddr("g2020.top", 8888, "Aliyun");//阿里云服务器地址
 int main() {
 	EventScheduler* scheduler = EventScheduler::createNew(EventScheduler::POLLER_EPOLL);	
 	ThreadPool* threadPool = ThreadPool::createNew(1);
-	std::vector<InetAddress> serverAddrs = { aliyunAddr };
+	// std::vector<InetAddress> serverAddrs = { aliyunAddr };
+	std::vector<InetAddress> serverAddrs = { serverAddr };
 	ISRServer* isrServer = ISRServer::createNew(scheduler, threadPool, isrWifiAddr, isrLanAddr, serverAddrs);
 	isrServer->start();
 	scheduler->loop();//处理事件
