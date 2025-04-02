@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700">
+  <!-- 背景 -->
+  <rect width="1000" height="700" fill="#f8f9fa" />
+  
+  <!-- 标题 -->
+  <text x="500" y="30" font-family="Arial" font-size="20" text-anchor="middle" font-weight="bold">TRLIB 详细事件处理与消息流转图</text>
+  
+  <!-- 参与者框 - 上部 -->
+  <rect x="50" y="50" width="120" height="50" rx="5" fill="#e6e6ff" stroke="#9999cc" />
+  <text x="110" y="80" font-family="Arial" font-size="14" text-anchor="middle">IOEvent</text>
+  
+  <rect x="200" y="50" width="120" height="50" rx="5" fill="#e6e6ff" stroke="#9999cc" />
+  <text x="260" y="80" font-family="Arial" font-size="14" text-anchor="middle">EventScheduler</text>
+  
+  <rect x="350" y="50" width="120" height="50" rx="5" fill="#e6e6ff" stroke="#9999cc" />
+  <text x="410" y="80" font-family="Arial" font-size="14" text-anchor="middle">EpollPoller</text>
+  
+  <rect x="500" y="50" width="120" height="50" rx="5" fill="#e6e6ff" stroke="#9999cc" />
+  <text x="560" y="80" font-family="Arial" font-size="14" text-anchor="middle">ISRConnection</text>
+  
+  <rect x="650" y="50" width="120" height="50" rx="5" fill="#e6e6ff" stroke="#9999cc" />
+  <text x="710" y="80" font-family="Arial" font-size="14" text-anchor="middle">ISRServer</text>
+  
+  <rect x="800" y="50" width="120" height="50" rx="5" fill="#e6e6ff" stroke="#9999cc" />
+  <text x="860" y="80" font-family="Arial" font-size="14" text-anchor="middle">TimerEvent</text>
+  
+  <!-- 生命线 -->
+  <line x1="110" y1="100" x2="110" y2="650" stroke="#9999cc" stroke-dasharray="5,5" />
+  <line x1="260" y1="100" x2="260" y2="650" stroke="#9999cc" stroke-dasharray="5,5" />
+  <line x1="410" y1="100" x2="410" y2="650" stroke="#9999cc" stroke-dasharray="5,5" />
+  <line x1="560" y1="100" x2="560" y2="650" stroke="#9999cc" stroke-dasharray="5,5" />
+  <line x1="710" y1="100" x2="710" y2="650" stroke="#9999cc" stroke-dasharray="5,5" />
+  <line x1="860" y1="100" x2="860" y2="650" stroke="#9999cc" stroke-dasharray="5,5" />
+  
+  <!-- 事件循环框 -->
+  <rect x="70" y="120" width="860" height="510" rx="10" fill="none" stroke="#aaaaaa" stroke-dasharray="5,5" />
+  <text x="100" y="145" font-family="Arial" font-size="14">loop</text>
+  <text x="145" y="145" font-family="Arial" font-size="14" fill="#666666">[事件循环]</text>
+  
+  <!-- 注释框1 -->
+  <rect x="270" y="150" width="150" height="30" rx="5" fill="#ffffcc" stroke="#ddddaa" />
+  <text x="345" y="170" font-family="Arial" font-size="12" text-anchor="middle">主事件循环开始</text>
+  
+  <!-- 消息1：处理触发事件 -->
+  <line x1="260" y1="190" x2="330" y2="190" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <line x1="330" y1="190" x2="260" y2="190" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="297" y="180" font-family="Arial" font-size="12" text-anchor="middle">handleTriggerEvent()</text>
+  
+  <!-- 注释框2 -->
+  <rect x="270" y="200" width="200" height="30" rx="5" fill="#ffffcc" stroke="#ddddaa" />
+  <text x="370" y="220" font-family="Arial" font-size="12" text-anchor="middle">处理触发事件(发送消息等)</text>
+  
+  <!-- 消息2：EventScheduler调用Poller -->
+  <line x1="260" y1="240" x2="410" y2="240" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="335" y="230" font-family="Arial" font-size="12" text-anchor="middle">handleEvent()</text>
+  
+  <!-- 消息3：Poller等待事件 -->
+  <line x1="410" y1="270" x2="480" y2="270" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <line x1="480" y1="270" x2="410" y2="270" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="445" y="260" font-family="Arial" font-size="12" text-anchor="middle">epoll_wait</text>
+  
+  <!-- 注释框3 -->
+  <rect x="420" y="280" width="200" height="30" rx="5" fill="#ffffcc" stroke="#ddddaa" />
+  <text x="520" y="300" font-family="Arial" font-size="12" text-anchor="middle">等待IO事件(SAP连接/数据)</text>
+  
+  <!-- IO事件处理框 -->
+  <rect x="150" y="320" width="800" height="200" rx="10" fill="none" stroke="#aaaaaa" stroke-dasharray="5,5" />
+  <text x="180" y="340" font-family="Arial" font-size="14">alt</text>
+  <text x="210" y="340" font-family="Arial" font-size="14" fill="#666666">[有IO事件]</text>
+  
+  <!-- 消息4：设置事件 -->
+  <line x1="410" y1="360" x2="110" y2="360" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="260" y="350" font-family="Arial" font-size="12" text-anchor="middle">setEvent(EVENT_READ/WRITE/ERROR)</text>
+  
+  <!-- 消息5：处理事件 -->
+  <line x1="410" y1="390" x2="110" y2="390" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="260" y="380" font-family="Arial" font-size="12" text-anchor="middle">handleEvent()</text>
+  
+  <!-- 消息6：回调ISRConnection -->
+  <line x1="110" y1="420" x2="560" y2="420" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="335" y="410" font-family="Arial" font-size="12" text-anchor="middle">readCallback/writeCallback</text>
+  
+  <!-- 消息7：读取处理 -->
+  <line x1="560" y1="450" x2="630" y2="450" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <line x1="630" y1="450" x2="560" y2="450" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="595" y="440" font-family="Arial" font-size="12" text-anchor="middle">handleRead()</text>
+  
+  <!-- 消息8：读取数据 -->
+  <line x1="560" y1="480" x2="630" y2="480" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <line x1="630" y1="480" x2="560" y2="480" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="595" y="470" font-family="Arial" font-size="12" text-anchor="middle">mInputBuffer.read()</text>
+  
+  <!-- 消息9：解析协议 -->
+  <line x1="560" y1="510" x2="710" y2="510" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="635" y="500" font-family="Arial" font-size="12" text-anchor="middle">handle01/02/06Mess</text>
+  
+  <!-- 定时器事件框 -->
+  <rect x="150" y="530" width="800" height="100" rx="10" fill="none" stroke="#aaaaaa" stroke-dasharray="5,5" />
+  <text x="180" y="550" font-family="Arial" font-size="14">alt</text>
+  <text x="210" y="550" font-family="Arial" font-size="14" fill="#666666">[定时器事件]</text>
+  
+  <!-- 消息10：检查定时器 -->
+  <line x1="260" y1="570" x2="860" y2="570" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="560" y="560" font-family="Arial" font-size="12" text-anchor="middle">定时器事件触发</text>
+  
+  <!-- 消息11：执行定时任务 -->
+  <line x1="860" y1="600" x2="710" y2="600" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="785" y="590" font-family="Arial" font-size="12" text-anchor="middle">timeOutCallback (03/22等)</text>
+  
+  <!-- 参与者框 - 下部 -->
+  <rect x="50" y="650" width="120" height="50" rx="5" fill="#e6e6ff" stroke="#9999cc" />
+  <text x="110" y="680" font-family="Arial" font-size="14" text-anchor="middle">IOEvent</text>
+  
+  <rect x="200" y="650" width="120" height="50" rx="5" fill="#e6e6ff" stroke="#9999cc" />
+  <text x="260" y="680" font-family="Arial" font-size="14" text-anchor="middle">EventScheduler</text>
+  
+  <rect x="350" y="650" width="120" height="50" rx="5" fill="#e6e6ff" stroke="#9999cc" />
+  <text x="410" y="680" font-family="Arial" font-size="14" text-anchor="middle">EpollPoller</text>
+  
+  <rect x="500" y="650" width="120" height="50" rx="5" fill="#e6e6ff" stroke="#9999cc" />
+  <text x="560" y="680" font-family="Arial" font-size="14" text-anchor="middle">ISRConnection</text>
+  
+  <rect x="650" y="650" width="120" height="50" rx="5" fill="#e6e6ff" stroke="#9999cc" />
+  <text x="710" y="680" font-family="Arial" font-size="14" text-anchor="middle">ISRServer</text>
+  
+  <rect x="800" y="650" width="120" height="50" rx="5" fill="#e6e6ff" stroke="#9999cc" />
+  <text x="860" y="680" font-family="Arial" font-size="14" text-anchor="middle">TimerEvent</text>
+  
+  <!-- 箭头定义 -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#333" />
+    </marker>
+  </defs>
+</svg>

@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <!-- 背景 -->
+  <rect width="800" height="600" fill="#f8f9fa" />
+  
+  <!-- 标题 -->
+  <text x="400" y="30" font-family="Arial" font-size="20" text-anchor="middle" font-weight="bold">TRLIB 私有协议通信流程</text>
+  
+  <!-- 参与者框 - 上部 -->
+  <rect x="100" y="50" width="120" height="50" rx="5" fill="#e6f7ff" stroke="#91d5ff" />
+  <text x="160" y="80" font-family="Arial" font-size="14" text-anchor="middle">SAP(接入设备)</text>
+  
+  <rect x="340" y="50" width="120" height="50" rx="5" fill="#f2f4f8" stroke="#d6e4ff" />
+  <text x="400" y="80" font-family="Arial" font-size="14" text-anchor="middle">ISR(网关)</text>
+  
+  <rect x="580" y="50" width="120" height="50" rx="5" fill="#f9f0ff" stroke="#d3adf7" />
+  <text x="640" y="80" font-family="Arial" font-size="14" text-anchor="middle">Server(服务器)</text>
+  
+  <!-- 生命线 -->
+  <line x1="160" y1="100" x2="160" y2="550" stroke="#91d5ff" stroke-dasharray="5,5" />
+  <line x1="400" y1="100" x2="400" y2="550" stroke="#d6e4ff" stroke-dasharray="5,5" />
+  <line x1="640" y1="100" x2="640" y2="550" stroke="#d3adf7" stroke-dasharray="5,5" />
+  
+  <!-- 注册流程 -->
+  <!-- 消息1：SAP注册请求 -->
+  <line x1="160" y1="120" x2="400" y2="120" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="280" y="110" font-family="Arial" font-size="12" text-anchor="middle">注册请求 (01)</text>
+  
+  <!-- 数据块1 -->
+  <rect x="150" y="130" width="250" height="30" rx="5" fill="#ffffcc" stroke="#ddddaa" />
+  <text x="275" y="150" font-family="Arial" font-size="10" text-anchor="middle">$01 SAP_MAC GPS CPU MEM 通信方式 端口 @</text>
+  
+  <!-- 消息2：ISR注册服务器 -->
+  <line x1="400" y1="180" x2="640" y2="180" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="520" y="170" font-family="Arial" font-size="12" text-anchor="middle">ISR注册 (04)</text>
+  
+  <!-- 数据块2 -->
+  <rect x="390" y="190" width="250" height="30" rx="5" fill="#ffffcc" stroke="#ddddaa" />
+  <text x="515" y="210" font-family="Arial" font-size="10" text-anchor="middle">$04 ISR_MAC GPS CPU MEM IP @</text>
+  
+  <!-- 消息3：返回网关信息 -->
+  <line x1="400" y1="240" x2="160" y2="240" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="280" y="230" font-family="Arial" font-size="12" text-anchor="middle">下发ID和网络ID (17)</text>
+  
+  <!-- 数据块3 -->
+  <rect x="150" y="250" width="250" height="30" rx="5" fill="#ffffcc" stroke="#ddddaa" />
+  <text x="275" y="270" font-family="Arial" font-size="10" text-anchor="middle">$17 SAP_MAC ISR_MAC ID NET_ID @</text>
+  
+  <!-- 消息4：SAP注册确认 -->
+  <line x1="160" y1="300" x2="400" y2="300" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="280" y="290" font-family="Arial" font-size="12" text-anchor="middle">注册确认 (02)</text>
+  
+  <!-- 数据块4 -->
+  <rect x="150" y="310" width="250" height="30" rx="5" fill="#ffffcc" stroke="#ddddaa" />
+  <text x="275" y="330" font-family="Arial" font-size="10" text-anchor="middle">$02 SAP_MAC ID @</text>
+  
+  <!-- 消息5：ISR转发SAP注册 -->
+  <line x1="400" y1="360" x2="640" y2="360" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="520" y="350" font-family="Arial" font-size="12" text-anchor="middle">SAP注册(ISR转发) (05)</text>
+  
+  <!-- 数据块5 -->
+  <rect x="390" y="370" width="250" height="40" rx="5" fill="#ffffcc" stroke="#ddddaa" />
+  <text x="515" y="390" font-family="Arial" font-size="10" text-anchor="middle">$05 ISR_MAC SAP_MAC GPS CPU MEM</text>
+  <text x="515" y="405" font-family="Arial" font-size="10" text-anchor="middle">通信方式 端口 @</text>
+  
+  <!-- 消息6：下发时间戳 -->
+  <line x1="400" y1="430" x2="160" y2="430" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="280" y="420" font-family="Arial" font-size="12" text-anchor="middle">下发时间戳 (20)</text>
+  
+  <!-- 数据块6 -->
+  <rect x="150" y="440" width="250" height="30" rx="5" fill="#ffffcc" stroke="#ddddaa" />
+  <text x="275" y="460" font-family="Arial" font-size="10" text-anchor="middle">$20 SAP_MAC TIMESTAMP @</text>
+  
+  <!-- 数据传输循环框 -->
+  <rect x="80" y="480" width="680" height="60" rx="10" fill="none" stroke="#aaaaaa" stroke-dasharray="5,5" />
+  <text x="120" y="500" font-family="Arial" font-size="14">loop</text>
+  <text x="180" y="500" font-family="Arial" font-size="14" fill="#666666">[数据传输]</text>
+  
+  <!-- 消息7：数据请求 -->
+  <line x1="400" y1="520" x2="160" y2="520" stroke="#333" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="280" y="510" font-family="Arial" font-size="12" text-anchor="middle">数据请求 (03)</text>
+  
+  <!-- 消息8：数据上传 -->
+  <line x1="160" y1="520" x2="400" y2="520" stroke="#333" stroke-width="2" marker-end="url(#arrow)" transform="translate(0,20)" />
+  <text x="280" y="530" font-family="Arial" font-size="12" text-anchor="middle">数据上传 (06)</text>
+  
+  <!-- 消息9：转发数据 -->
+  <line x1="400" y1="520" x2="640" y2="520" stroke="#333" stroke-width="2" marker-end="url(#arrow)" transform="translate(0,20)" />
+  <text x="520" y="530" font-family="Arial" font-size="12" text-anchor="middle">转发数据 (06)</text>
+  
+  <!-- 参与者框 - 下部 -->
+  <rect x="100" y="550" width="120" height="50" rx="5" fill="#e6f7ff" stroke="#91d5ff" />
+  <text x="160" y="580" font-family="Arial" font-size="14" text-anchor="middle">SAP(接入设备)</text>
+  
+  <rect x="340" y="550" width="120" height="50" rx="5" fill="#f2f4f8" stroke="#d6e4ff" />
+  <text x="400" y="580" font-family="Arial" font-size="14" text-anchor="middle">ISR(网关)</text>
+  
+  <rect x="580" y="550" width="120" height="50" rx="5" fill="#f9f0ff" stroke="#d3adf7" />
+  <text x="640" y="580" font-family="Arial" font-size="14" text-anchor="middle">Server(服务器)</text>
+  
+  <!-- 箭头定义 -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#333" />
+    </marker>
+  </defs>
+</svg>
