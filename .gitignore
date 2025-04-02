@@ -2,3 +2,4 @@
 *.json
 ISR
 .vscode
+build
