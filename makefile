@@ -1,7 +1,7 @@
 # Makefile
 
 CARM = arm-linux-gnueabihf-g++
-CXXFLAGS = -std=c++11 -w -g -pthread
+CXXFLAGS = -std=c++14 -w -g -pthread
 
 TARGET = ISR
 

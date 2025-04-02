@@ -2,3 +2,38 @@
 *.json
 .vscode
 ISR
+# CMake 构建目录
+/build/
+/bin/
+/lib/
+/CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# IDE 文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 编译产物
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
+*.dylib
+*.exe
+*.out
+
+# 调试文件
+*.pdb
+*.ilk
+*.exp
+*.idb
+
+# 其他
+.DS_Store
+*.log

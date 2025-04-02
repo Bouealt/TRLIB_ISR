@@ -4,6 +4,7 @@
 #include "../Base/Event.h"
 #include "../Base/EventScheduler.h"
 #include "../Base/ThreadPool.h"
+#include "CommunicationSelector.h"
 #include "ISRConnection.h"
 #include "InetAddress.h"
 #include "Device.h"
@@ -58,7 +59,7 @@ public:
 	void handle05Mess(void *arg, std::string sapMac); // sap向服务器注册
 	void handle06Mess(void *arg, std::string mess);	  // sap数据
 	void handle10Mess(void *arg, std::string mess);	  // 服务器时间戳
-	void handle15Mess(void *arg, std::string mess)	//重启SAP
+	void handle15Mess(void *arg, std::string mess);	  // 重启SAP
 	void handle17Mess(void *arg, std::string sapMac); // isr信息下发
 	void handle20Mess(void *arg, std::string sapMac); // isr时间戳
 	void handle21Mess(void *arg, std::string mess);	  // sap缓存数据
@@ -79,6 +80,8 @@ private:
 	std::map<std::string, ISRConnection *> mSAPMacMap; // sap连接
 	std::vector<int> mDisConnectList;
 	TriggerEvent *mCloseTriggerEvent;
+	LocalCommSelector *mLocalCommSelector;
+
 	std::mutex mMtx;
 	bool isSetTime = false;
 	int send06Flag = 0;

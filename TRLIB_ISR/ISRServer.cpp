@@ -21,6 +21,8 @@ ISRServer::ISRServer(EventScheduler *scheduler, ThreadPool *threadPool, InetAddr
 	mCloseTriggerEvent = TriggerEvent::createNew(this, -1);		  // 套接字设置为-1表示回调函数不需要该套接字
 	mCloseTriggerEvent->setTriggerCallback(closeConnectCallback); // 处理断开连接的地址
 
+	mLocalCommSelector = LocalCommSelector::createNew(scheduler);
+
 	mReConnectTask = Task::createNew();
 	mReConnectTask->setTaskCallback(reConnectTaskCallback, this); // 重新连接
 
@@ -199,18 +201,21 @@ void ISRServer::deviceConnectInit(std::unique_ptr<Device>& device)
 	}
 	if (-1 != device->mWifiFd)
 	{
+		mLocalCommSelector->registerInterface(COMM_WIFI,device->mWifiFd);
 		mWifiAcceptIOEvent = IOEvent::createNew(device->mWifiFd, this);
 		mWifiAcceptIOEvent->setReadCallback(readCallback);
 		mWifiAcceptIOEvent->enableReadHandling();
 	}
 	if (-1 != device->mLanFd)
 	{
+		// mLocalCommSelector->registerInterface(COMM_ETHERNET,device->mLanFd);
 		mLanAcceptIOEvent = IOEvent::createNew(device->mLanFd, this);
 		mLanAcceptIOEvent->setReadCallback(readCallback);
 		mLanAcceptIOEvent->enableReadHandling();
 	}
 	if (-1 != device->mLoraFd)
 	{
+		mLocalCommSelector->registerInterface(COMM_LORA,device->mLoraFd);
 		std::cout << "lora" << std::endl; // 还没测试过能不能用
 		ISRConnection *conn = ISRConnection::createNew(this, device->mLoraFd);
 		printf(" lora set connectcall");
@@ -219,6 +224,7 @@ void ISRServer::deviceConnectInit(std::unique_ptr<Device>& device)
 	}
 	if (-1 != device->mBlueToothFd)
 	{
+		mLocalCommSelector->registerInterface(COMM_BLUETOOTH,device->mBlueToothFd);
 		std::cout << "bluetooth" << std::endl;
 		// 还没测试过
 		mBlueToothAcceptIOEvent = IOEvent::createNew(device->mBlueToothFd, this);

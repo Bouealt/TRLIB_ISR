@@ -49,7 +49,9 @@
     "streambuf": "cpp",
     "thread": "cpp",
     "typeinfo": "cpp",
-    "codecvt": "cpp"
+    "codecvt": "cpp",
+    "functional": "cpp",
+    "iterator": "cpp"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
